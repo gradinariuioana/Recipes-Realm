@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.Entity;
 using ModelsLibrary;
 
@@ -10,39 +7,23 @@ namespace DataAccess
 {
     public class RecipeCategoryAccessor
     {
-        public static void ShowRecipeCategories()
+        public static IEnumerable<Recipe> GetRecipesForCategory(long id)
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {
-                Console.WriteLine("--- Recipe Categories ---");
+                var recipes = context.RecipeCategories.Where(r => r.Category_ID == id).Include(r => r.Recipe).Select(r => r.Recipe).ToList();
 
-                var recipeCategories = context.RecipeCategories.ToList();
-                foreach (RecipeCategory item in recipeCategories) 
-                {
-                    //Recipe and Category - Lazy Loading
-                    Console.WriteLine("Recipe Name: {0}\nCategory Name: {1}\n\n", 
-                                       item.Recipe.Recipe_Name, item.Category.Category_Name);
-                }
+                return recipes;
             }
         }
 
-        public static string GetCategoryName(int idx)
+        public static IEnumerable<Category> GetCategoriesForRecipe(long id)
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {
-                //Category - Eager Loading
-                var recipeCategory = context.RecipeCategories.Include(r => r.Category).FirstOrDefault(r => r.Category_ID == idx);
-                return recipeCategory.Category.Category_Name;
-            }
-        }
+                var categories = context.RecipeCategories.Where(r => r.Recipe_ID == id).Include(r => r.Category).Select(r => r.Category).ToList();
 
-        public static string GetRecipeName(int idx)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
-                //Recipe - Eager Loading
-                var recipeCategory = context.RecipeCategories.Include(r => r.Recipe).FirstOrDefault(r => r.Category_ID == idx);
-                return recipeCategory.Recipe.Recipe_Name;
+                return categories;
             }
         }
     }

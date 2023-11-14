@@ -21,7 +21,7 @@ namespace RecipesRealm.ViewModels {
         [DisplayName("Cooks In")]
         public string Cooking_Time { get; set; }
 
-        [DisplayName("Difficulty")]
+        [DisplayName("Difficulty Level")]
         public int? Difficulty_Level { get; set; }
 
         [DisplayName("Created On")]
@@ -40,11 +40,13 @@ namespace RecipesRealm.ViewModels {
         public long? AverageRating { get; set; }
 
         /*public virtual ICollection<CategoryViewModel> RecipeCategories { get; set; }
-        public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
-        public virtual ICollection<RecipeNutritionElement> RecipeNutritionElements { get; set; }
-        public virtual ICollection<RecipeStep> RecipeSteps { get; set; }
+        
+    
         public virtual ICollection<Review> Reviews { get; set; }*/
         public virtual ICollection<TagViewModel> RecipeTags { get; set; }
-        
+        public virtual ICollection<NutritionElementViewModel> RecipeNutritionElements { get; set; }
+        public virtual ICollection<IngredientViewModel> RecipeIngredients { get; set; }
+        public virtual ICollection<RecipeStepViewModel> RecipeSteps { get; set; }
+
     }
 }

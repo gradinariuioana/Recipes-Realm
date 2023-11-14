@@ -10,7 +10,7 @@ namespace DataAccess
 {
     public class RecipeTagAccessor
     {
-        public static IEnumerable<Recipe> GetRecipesByTag(long id)
+        public static IEnumerable<Recipe> GetRecipesForTag(long id)
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {

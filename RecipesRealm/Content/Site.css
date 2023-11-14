@@ -1,100 +1,249 @@
-﻿/* Reset some default styles for better cross-browser consistency */
-body,
-h1,
-h2,
-h3,
-p,
-ul,
-li {
-    margin: 0;
-    padding: 0;
+﻿#recipe-single h1 {
+	font-size: 30px;
+	line-height: 32px;
+	font-family: Oswald,sans-serif;
+	font-weight: 600;
+	color: #337179;
+	margin-bottom: 6px;
+	letter-spacing: 0;
 }
 
-body {
-    font-family: 'Arial', sans-serif;
+#recipe-single .recipe-intro {
+	border-top: 1px solid #c5b9a0;
+	border-bottom: 1px solid #c5b9a0;
+	padding: 15px 0;
+	font-size: 17px;
+	line-height: 26px;
+	font-family: Cabin,sans-serif;
+	font-weight: 400;
+	color: #373a36;
 }
 
-/* Header Styles */
-header {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 20px 0;
+#recipe-single .recipe-details {
+	padding: 15px 0 0;
 }
 
-    header h1 {
-        font-size: 36px;
-    }
-
-/* Navigation Styles */
-nav {
-    background-color: #444;
-    padding: 10px 0;
+#recipe-single .recipe-details .recipe-detail {
+	display: flex;
+	align-items: center;
 }
 
-    nav a {
-        color: #fff;
-        text-decoration: none;
-        margin: 0 15px;
-        font-size: 16px;
-    }
-
-/* Main Content Styles */
-.container {
-    max-width: 1200px;
-    margin: 20px auto;
+#recipe-single .recipe-details .recipe-detail svg {
+	display: block;
+	float: left;
+	margin-right: 5px;
 }
 
-section {
-    margin-bottom: 40px;
+#recipe-single .recipe-details .recipe-detail svg path {
+	fill: #337179;
 }
 
-/* Recipe Card Styles */
-.recipe-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+#recipe-single .recipe-details .recipe-detail {
+	margin-top: 0;
+	font-family: Oswald,sans-serif;
+	font-weight: 700;
+	text-transform: uppercase;
+	font-size: 12px;
+	line-height: 15px;
+	margin-bottom: 15px;
+	color: #1e282f;
+	float: none;
+	margin-right: 0;
 }
 
-    .recipe-card img {
-        max-width: 100%;
-        border-radius: 8px;
-    }
-
-    .recipe-card h3 {
-        margin-top: 10px;
-    }
-
-    .recipe-card p {
-        color: #666;
-    }
-
-/* Footer Styles */
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+#recipe-single .recipe-details .detail_desc {
+	color: #49c5b1;
+	margin-right: 5px;
 }
 
-/* Responsive Styles */
-@media (max-width: 767px) {
-    nav {
-        text-align: center;
-    }
+#recipe-single .recipe-details .time svg {
+	width: 15px;
+	height: 14px;
+}
 
-        nav a {
-            display: block;
-            margin: 10px 0;
-        }
+#recipe-single .recipe-details .serves svg {
+	width: 13px;
+	height: 15px;
+}
 
-    .recipe-card {
-        padding: 10px;
-    }
+#recipe-single .tags-wrapper .tags-list {
+	border-top: 1px solid #c5b9a0;
+	padding: 15px 0 38px 0;
+}
+
+#recipe-single .tags-wrapper svg {
+	display: inline-block;
+	margin-right: 10px;
+	width: 27px;
+	height: 27px;
+}
+
+#recipe-single .tags-wrapper a {
+	color: #337179;
+	transition: color .3s ease-in-out;
+	display: inline-block;
+	font-weight: 600;
+	font-size: 15px;
+	line-height: 1.4;
+	text-decoration: none !important;
+}
+
+#recipe-single .tags-wrapper a:hover {
+	color: #1e282f;
+}
+
+#recipe-single .tags-wrapper .single-tag {
+	display: inline-block;
+}
+
+#recipe-single .save-recipe svg{
+	width: 28px;
+	height: 28px;
+	cursor: pointer;
+	float: right;
+}
+
+#recipe-single .recipe-header-left img {
+	width: 100%;
+	height: auto;
+	margin-bottom: 16px;
+}
+
+.recipe-nutrition ul {
+	margin: 0;
+	padding: 0;
+	width: calc(100% + 5px);
+	float: left;
+	clear: both;
+	display: flex;
+	justify-content: space-between;
+	margin-right: -5px;
+}
+
+.recipe-nutrition ul li {
+	margin: 0 !important;
+	padding: 0 5px 5px 0;
+	display: inline-block;
+	float: left;
+	position: relative;
+}
+
+.recipe-nutrition ul li .moreInfo {
+	display: none;
+	border: 1px solid #a3865b;
+	width: 300px;
+	position: absolute;
+	background: #fff;
+	padding: 10px 25px;
+	text-align: center;
+	top: calc(100% + 7px);
+    left: -105.5px;
+}
+
+.moreInfo:after, .moreInfo:before {
+	bottom: 100%;
+	left: 49%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none
+}
+
+.moreInfo:after {
+	border-color: hsla(0,0%,100%,0);
+	border-bottom-color: #fff;
+	border-width: 10px;
+	margin-left: -10px
+}
+
+.moreInfo:before {
+	border-color: rgba(163,134,91,0);
+	border-bottom-color: #a3865b;
+	border-width: 11px;
+	margin-left: -11px
+}
+
+.recipe-nutrition ul li:hover .moreInfo{
+	display: block;
+}
+
+.recipe-nutrition ul li .inner {
+	padding: 6px;
+	display: inline-block;
+	border-radius: 2px;
+	border: 1px solid #1e282f;
+	text-align: center;
+	min-width: 80px;
+	cursor: pointer;
+}
+
+.recipe-nutrition ul li .title {
+	font-size: 12px;
+}
+
+.recipe-nutrition ul li span {
+	display: block;
+	padding-bottom: 6px;
+	line-height: 1;
+}
+
+.recipe-nutrition ul li .top {
+	border-bottom: 1px solid #dcdcdc;
+}
+
+.recipe-nutrition ul li .bottom, .recipe-nutrition ul li .top {
+	font-size: 16px;
+	font-weight: 300;
+	font-family: Cabin,sans-serif;
+}
+
+.recipe-nutrition ul li .bottom {
+	padding-top: 6px;
+	padding-bottom: 0;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.recipe-nutrition .moreInfo h5 {
+	margin: 0 15px 10px 0;
+	font-size: 20px;
+	line-height: 32px;
+	text-decoration: none;
+	color: #1e282f;
+	border-bottom: 3px solid #c5b9a0;
+	padding-bottom: 3px;
+	display: inline;
+	font-weight: 400;
+}
+
+.recipe-nutrition .moreInfo p {
+	font-size: 16px;
+	line-height: 28px;
+	margin-bottom: 10px;
+}
+
+#recipe-single .instructions-wrapper h2, 
+#recipe-single .recipe-ingredients h2 {
+	font-size: 22px;
+	font-weight: 600;
+	margin: 0 0 20px;
+	text-align: left;
+	color: #337179;
+	text-transform: none;
+}
+
+#recipe-single .recipe-ingredients .ingred-list {
+	list-style: circle;
+	margin: 0 0 20px;
+	font-size: 17px;
+	padding-inline-start: 20px;
+}
+
+#recipe-single .recipe-ingredients .ingred-list li {
+	line-height: 28px;
+	margin: 0 0 5px;
+	font-family: Cabin,sans-serif;
+	font-weight: lighter;
 }

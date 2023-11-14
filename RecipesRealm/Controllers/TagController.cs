@@ -21,7 +21,7 @@ namespace RecipesRealm.Controllers
                 {
                     Tag_ID = tag.Tag_ID,
                     Tag_Name = tag.Tag_Name,
-                    Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList())
+                    Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList())
                 };
 
                 tagViewModels = tagViewModels.Append(tagViewModel);
@@ -92,7 +92,7 @@ namespace RecipesRealm.Controllers
 
                 tagViewModel.Tag_ID = tag.Tag_ID;
                 tagViewModel.Tag_Name = tag.Tag_Name;
-                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
 
                 return View(tagViewModel);
             }
@@ -124,7 +124,7 @@ namespace RecipesRealm.Controllers
 
                 tagViewModel.Tag_ID = tag.Tag_ID;
                 tagViewModel.Tag_Name = tag.Tag_Name;
-                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
 
                 return View(tagViewModel);
             }
@@ -195,7 +195,7 @@ namespace RecipesRealm.Controllers
 
                 tagViewModel.Tag_ID = tag.Tag_ID;
                 tagViewModel.Tag_Name = tag.Tag_Name;
-                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
 
                 return View(tagViewModel);
             }

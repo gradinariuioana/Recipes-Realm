@@ -9,7 +9,7 @@ namespace ModelsLibrary
         public long ID { get; set; }
 
         [Required]
-        public int Quantity { get; set; }
+        public long Quantity { get; set; }
 
         [MaxLength(200)]
         public string Measurement_Unit { get; set; }

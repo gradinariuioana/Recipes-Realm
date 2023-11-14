@@ -20,7 +20,7 @@ namespace RecipesRealm.Controllers
                 var tagViewModel = new TagViewModel
                 {
                     Tag_Name = tag.Tag_Name,
-                    Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList())
+                    Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList())
                 };
 
                 tagViewModels = tagViewModels.Append(tagViewModel);
@@ -107,6 +107,52 @@ namespace RecipesRealm.Controllers
                 }
                 recipeViewModel.RecipeTags = recipeTags;
 
+                ICollection<NutritionElementViewModel> recipeNutritionElements = new List<NutritionElementViewModel>();
+                var nElems = DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsForRecipe(id);
+                foreach (var nElem in nElems)
+                {
+                    var neViewModel = new NutritionElementViewModel
+                    {
+                        Element_Name = nElem.NutritionElement.Element_Name,
+                        Element_Description = nElem.NutritionElement.Element_Description,
+                        Measurement_Unit = nElem.Measurement_Unit,
+                        Value = nElem.Value
+                    };
+                    recipeNutritionElements.Add(neViewModel);
+                }
+                recipeViewModel.RecipeNutritionElements = recipeNutritionElements;
+
+                ICollection<IngredientViewModel> recipeIngredients = new List<IngredientViewModel>();
+                var ingreds = DataAccess.RecipeIngredientAccessor.GetIngredientsForRecipe(id);
+                foreach (var ingred in ingreds)
+                {
+                    var ingr = new IngredientViewModel
+                    {
+                        Ingredient_Name = ingred.Ingredient.Ingredient_Name,
+                        Quantity = ingred.Quantity,
+                        Measurement_Unit = ingred.Measurement_Unit,
+                        IsOptional = ingred.IsOptional,
+                        Other_Info = ingred.Other_Info
+                    };
+                    recipeIngredients.Add(ingr);
+                }
+                recipeViewModel.RecipeIngredients = recipeIngredients;
+
+                ICollection<RecipeStepViewModel> recipeSteps = new List<RecipeStepViewModel>();
+                var steps = DataAccess.RecipeStepAccessor.GetStepsForRecipe(id);
+                foreach (var step in steps)
+                {
+                    var stepVM = new RecipeStepViewModel
+                    {
+                        Step_Number = step.Step_Number,
+                        Step_Title = step.Step_Title,
+                        Step_Description = step.Step_Description,
+                        IsOptional = step.IsOptional
+                    };
+                    recipeSteps.Add(stepVM);
+                }
+                recipeViewModel.RecipeSteps = recipeSteps;
+
                 return View(recipeViewModel);
             }
             catch (Exception ex)
@@ -136,7 +182,7 @@ namespace RecipesRealm.Controllers
                 }
 
                 tagViewModel.Tag_Name = tag.Tag_Name;
-                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
 
                 return View(tagViewModel);
             }
@@ -206,7 +252,7 @@ namespace RecipesRealm.Controllers
                 }
 
                 tagViewModel.Tag_Name = tag.Tag_Name;
-                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
 
                 return View(tagViewModel);
             }

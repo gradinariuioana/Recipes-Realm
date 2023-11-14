@@ -10,39 +10,13 @@ namespace DataAccess
 {
     public class RecipeNutritionElementAccessor
     {
-        public static void ShowRecipeNutritionElements()
+        public static IEnumerable<RecipeNutritionElement> GetNutritionElementsForRecipe(long id)
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {
-                Console.WriteLine("--- Recipe Nutrition Elements ---");
+                var nElems = context.RecipeNutritionElements.Where(r => r.Recipe_ID == id).Include(r => r.NutritionElement).ToList();
 
-                var recipeNutritionElements = context.RecipeNutritionElements.ToList();
-                foreach (RecipeNutritionElement item in recipeNutritionElements)
-                {
-                    //Recipe and Nutrition Element - Lazy Loading
-                    Console.WriteLine("Recipe Name: {0}\nNutrition Element Name:{1}\nNutrition Element Value: {2}{3}\n\n",
-                                       item.Recipe.Recipe_Name, item.NutritionElement.Element_Name, item.Value, item.Measurement_Unit);
-                }
-            }
-        }
-
-        public static string GetNutritionElementName(int idx)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
-                //Nutrition Element - Eager Loading
-                var recipeNutritionElement = context.RecipeNutritionElements.Include(r => r.NutritionElement).FirstOrDefault(r => r.ID == idx);
-                return recipeNutritionElement.NutritionElement.Element_Name;
-            }
-        }
-
-        public static string GetRecipeName(int idx)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
-                //Recipe - Eager Loading
-                var recipeNutritionElement = context.RecipeNutritionElements.Include(r => r.Recipe).FirstOrDefault(r => r.ID == idx);
-                return recipeNutritionElement.Recipe.Recipe_Name;
+                return nElems;
             }
         }
     }
