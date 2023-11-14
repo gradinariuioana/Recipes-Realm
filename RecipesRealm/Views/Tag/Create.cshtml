@@ -1,27 +1,20 @@
 ﻿@model RecipesRealm.ViewModels.TagViewModel
 
 @{
-    ViewBag.Title = "Edit Tag";
+    ViewBag.Title = "Add a Tag";
 }
 
 <h2>@ViewBag.Title</h2>
 
 <h5 class="alert-warning">@ViewBag.Warning</h5>
 
-@using (Html.BeginForm("Edit", "Tag", FormMethod.Post))
-{
+@using (Html.BeginForm("Create", "Tag", FormMethod.Post)) {
     <div>
         <div class="row">
             <div class="cell col form-group" data-name="name">
                 <div class="col-form-label"> @Html.LabelFor(model => model.Tag_Name)</div>
                 <div class="input-group">@Html.TextBoxFor(model => model.Tag_Name)</div>
                 <div class="text-warning">@Html.ValidationMessageFor(model => model.Tag_Name)</div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="cell col form-group" data-name="recipes">
-                <div class="col-form-label"> @Html.DisplayNameFor(model => model.Tag_Recipes)</div>
-                <div class="input-group">@Html.DisplayFor(model => model.Tag_Recipes)</div>
             </div>
         </div>
         <div class="row">

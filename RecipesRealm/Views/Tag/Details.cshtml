@@ -6,28 +6,17 @@
 
 <h2>@ViewBag.Title</h2>
 
-@if (ViewBag.Warning != null)
-{
-    <h5>@ViewBag.Warning</h5>
-}
-else
-{
-    <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Tag_Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tag_Recipes)
-            </th>
-        </tr>
-        <tr>
-            <td>
-                @Html.DisplayFor(model => model.Tag_Name)
-            </td>
-            <td>
-                @Html.DisplayFor(model => model.Tag_Recipes)
-            </td>
-        </tr>
-    </table>
-}
+<div>
+    <div class="row">
+        <div class="cell col form-group" data-name="name">
+            <div class="col-form-label"> @Html.DisplayNameFor(model => model.Tag_Name)</div>
+            <div class="input-group">@Html.DisplayFor(model => model.Tag_Name)</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell col form-group" data-name="recipes">
+            <div class="col-form-label"> @Html.DisplayNameFor(model => model.Tag_Recipes)</div>
+            <div class="input-group">@Html.DisplayFor(model => model.Tag_Recipes)</div>
+        </div>
+    </div>
+</div>

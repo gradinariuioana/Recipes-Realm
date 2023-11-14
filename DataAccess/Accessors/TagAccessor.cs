@@ -9,7 +9,7 @@ namespace DataAccess
 {
     public class TagAccessor
     {
-        public static IEnumerable<Tag> GetTags()
+        public static IEnumerable<Tag> GetTagsList()
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {
@@ -49,12 +49,22 @@ namespace DataAccess
             }
         }
 
-        public static void RemoveTag(Tag tag)
+        public static void RemoveTag(long id)
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {
+                Tag tag = context.Tags.FirstOrDefault(t => t.Tag_ID == id);
+
                 context.Tags.Remove(tag);
                 context.SaveChanges();
+            }
+        }
+
+        public static bool CheckTagExists(string TagName) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                Tag tag = context.Tags.FirstOrDefault(t => t.Tag_Name.ToLower().Trim() == TagName.ToLower().Trim());
+
+                return tag != null;
             }
         }
     }

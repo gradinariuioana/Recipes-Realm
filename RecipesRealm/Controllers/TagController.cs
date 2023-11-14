@@ -13,7 +13,7 @@ namespace RecipesRealm.Controllers
         public ActionResult Index()
         {
             IEnumerable<TagViewModel> tagViewModels = new List<TagViewModel>();
-            IEnumerable<Tag> tags = DataAccess.TagAccessor.GetTags();
+            IEnumerable<Tag> tags = DataAccess.TagAccessor.GetTagsList();
 
             foreach (Tag tag in tags)
             {
@@ -43,14 +43,26 @@ namespace RecipesRealm.Controllers
         {
             try
             {
-                Tag tag = new Tag
-                {
-                    Tag_Name = model.Tag_Name
-                };
+                if (ModelState.IsValid) {
 
-                var tId = DataAccess.TagAccessor.AddTag(tag);
+                    var tagExistsInDB = DataAccess.TagAccessor.CheckTagExists(model.Tag_Name);
 
-                return RedirectToAction("Details", tId);
+                    if (tagExistsInDB) {
+                        ViewBag.Warning = "There is already a tag with this name in the DataBase";
+                        return View(model);
+                    }
+
+                    Tag tag = new Tag {
+                        Tag_Name = model.Tag_Name
+                    };
+
+                    var tId = DataAccess.TagAccessor.AddTag(tag);
+
+                    return RedirectToAction("Details", tId);
+                }
+
+                ViewBag.Warning = "Could not create Tag";
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -127,17 +139,14 @@ namespace RecipesRealm.Controllers
         {
             try
             {
-                Tag tag = DataAccess.TagAccessor.GetTag(id);
-                if (tag == null)
-                {
-                    ViewBag.Warning = "The tag could not be found";
-                    return View(model);
-                }
+                Tag newTag = new Tag {
+                    Tag_Name = model.Tag_Name,
+                    Tag_ID = id
+                };
 
-                tag.Tag_Name = model.Tag_Name;
-                DataAccess.TagAccessor.EditTag(tag);
+                DataAccess.TagAccessor.EditTag(newTag);
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", id);
             }
             catch (Exception ex)
             {
@@ -179,19 +188,14 @@ namespace RecipesRealm.Controllers
 
 
         // POST: Tag/Delete/id
+
         [HttpPost]
-        public ActionResult Delete(long id, TagViewModel model)
+        [ActionName("Delete")]
+        public ActionResult DeleteTag(long id)
         {
             try
             {
-                Tag tag = DataAccess.TagAccessor.GetTag(id);
-                if (tag == null)
-                {
-                    ViewBag.Warning = "The tag could not be found";
-                    return View(model);
-                }
-
-                DataAccess.TagAccessor.RemoveTag(tag);
+                DataAccess.TagAccessor.RemoveTag(id);
 
                 return RedirectToAction("Index");
             }
