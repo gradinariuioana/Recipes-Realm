@@ -9,7 +9,9 @@ using System.Web;
 namespace RecipesRealm.ViewModels
 {
     public class TagViewModel
-    { 
+    {         
+        public long Tag_ID { get; set; }
+
         [DisplayName("Tag Name")]
         [Required(ErrorMessage = "Tag name is required")]
         public string Tag_Name { get; set; }

@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace RecipesRealm.Controllers
 {
-    public class TagController : Controller
+    public class RecipeController : Controller
     {
         public ActionResult Index()
         {
@@ -19,7 +19,6 @@ namespace RecipesRealm.Controllers
             {
                 var tagViewModel = new TagViewModel
                 {
-                    Tag_ID = tag.Tag_ID,
                     Tag_Name = tag.Tag_Name,
                     Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList())
                 };
@@ -76,29 +75,43 @@ namespace RecipesRealm.Controllers
 
         #region Details
 
-        // GET: Tag/Details/id
+        // GET: Recipe/Details/id
         public ActionResult Details(long id)
         {
             try
             {
-                var tag = DataAccess.TagAccessor.GetTag(id);
-                TagViewModel tagViewModel = new TagViewModel();
+                var recipe = DataAccess.RecipeAccessor.GetRecipe(id);
+                RecipeViewModel recipeViewModel = new RecipeViewModel();
 
-                if (tag == null)
+                if (recipe == null)
                 {
-                    ViewBag.Warning = "The tag could not be found";
-                    return View(tagViewModel);
+                    ViewBag.Warning = "The recipe could not be found";
+                    return View(recipeViewModel);
                 }
 
-                tagViewModel.Tag_ID = tag.Tag_ID;
-                tagViewModel.Tag_Name = tag.Tag_Name;
-                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                recipeViewModel.Recipe_Name = recipe.Recipe_Name;
+                recipeViewModel.Recipe_Description = recipe.Recipe_Description;
+                recipeViewModel.Cooking_Time = recipe.Cooking_Time;
+                recipeViewModel.Difficulty_Level = recipe.Difficulty_Level;
+                recipeViewModel.Servings = recipe.Servings;
+                recipeViewModel.Picture_Path = recipe.Picture_Path;
 
-                return View(tagViewModel);
+                ICollection<TagViewModel> recipeTags = new List<TagViewModel>();
+                var tags = DataAccess.RecipeTagAccessor.GetTagsForRecipe(id);
+                foreach(var tag in tags) {
+                    var tagViewModel = new TagViewModel {
+                        Tag_ID = tag.Tag_ID,
+                        Tag_Name = tag.Tag_Name
+                    };
+                    recipeTags.Add(tagViewModel);
+                }
+                recipeViewModel.RecipeTags = recipeTags;
+
+                return View(recipeViewModel);
             }
             catch (Exception ex)
             {
-                Utils.WriteToLog("Tags", "Details", ex.ToString());
+                Utils.WriteToLog("Recipe", "Details", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
 
@@ -122,7 +135,6 @@ namespace RecipesRealm.Controllers
                     return View(tagViewModel);
                 }
 
-                tagViewModel.Tag_ID = tag.Tag_ID;
                 tagViewModel.Tag_Name = tag.Tag_Name;
                 tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
 
@@ -193,7 +205,6 @@ namespace RecipesRealm.Controllers
                     return View(tagViewModel);
                 }
 
-                tagViewModel.Tag_ID = tag.Tag_ID;
                 tagViewModel.Tag_Name = tag.Tag_Name;
                 tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesByTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
 

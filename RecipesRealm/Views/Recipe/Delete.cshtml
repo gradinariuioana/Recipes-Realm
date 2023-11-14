@@ -1,0 +1,89 @@
+﻿@model RecipesRealm.ViewModels.RecipeViewModel
+
+@{
+    ViewBag.Title = "Delete Recipe";
+}
+
+@using (Html.BeginForm("Delete", "Recipe", FormMethod.Post))
+{
+    <div class="card">
+        <div class="card-header">
+            @Html.DisplayFor(model => model.Recipe_Name) @ViewBag.Title
+        </div>
+        <div class="card-body">
+            <div class="row mx-0">
+                <h5 class="alert-warning">@ViewBag.Warning</h5>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Recipe_Name)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Recipe_Name)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Recipe_Description)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Recipe_Description)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Cooking_Time)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Cooking_Time)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Difficulty_Level)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Difficulty_Level)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Creation_Date)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Creation_Date)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Servings)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Servings)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Author_Name)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Author_Name)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.AverageRating)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.AverageRating)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    <input type="submit" value="Delete" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+}

@@ -1,0 +1,29 @@
+﻿@model IEnumerable<RecipesRealm.ViewModels.TagViewModel>
+
+@{
+    ViewBag.Title = "Tags";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Tag_Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Tag_Recipes)
+        </th>
+    </tr>
+    @foreach(var tagViewModel in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => tagViewModel.Tag_Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => tagViewModel.Tag_Recipes)
+                    </td>
+                </tr>
+            }
+</table>

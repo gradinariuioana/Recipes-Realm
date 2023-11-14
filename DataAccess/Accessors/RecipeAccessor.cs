@@ -25,12 +25,12 @@ namespace DataAccess
             }
         }
 
-        public static string GetRecipeName(int idx)
+        public static Recipe GetRecipe(long idx)
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {
                 var recipe = context.Recipes.AsNoTracking().FirstOrDefault(r => r.Recipe_ID == idx);
-                return recipe.Recipe_Name;
+                return recipe;
             }
         }
     }
