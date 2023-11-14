@@ -4,19 +4,26 @@
     ViewBag.Title = "Tag Details";
 }
 
-<h2>@ViewBag.Title</h2>
-
-<div>
-    <div class="row">
-        <div class="cell col form-group" data-name="name">
-            <div class="col-form-label"> @Html.DisplayNameFor(model => model.Tag_Name)</div>
-            <div class="input-group">@Html.DisplayFor(model => model.Tag_Name)</div>
-        </div>
+<div class="card">
+    <div class="card-header">
+        @ViewBag.Title
     </div>
-    <div class="row">
-        <div class="cell col form-group" data-name="recipes">
-            <div class="col-form-label"> @Html.DisplayNameFor(model => model.Tag_Recipes)</div>
-            <div class="input-group">@Html.DisplayFor(model => model.Tag_Recipes)</div>
+    <div class="card-body">
+        <div class="row mx-0">
+            <div class="card-text col-6">
+                @Html.DisplayNameFor(model => model.Tag_Name)
+            </div>
+            <div class="card-text col-6">
+                @Html.DisplayFor(model => model.Tag_Name)
+            </div>
+        </div>
+        <div class="row mx-0">
+            <div class="card-text col-6">
+                @Html.DisplayNameFor(model => model.Tag_Recipes)
+            </div>
+            <div class="card-text col-6">
+                @Html.DisplayFor(model => model.Tag_Recipes)
+            </div>
         </div>
     </div>
 </div>
