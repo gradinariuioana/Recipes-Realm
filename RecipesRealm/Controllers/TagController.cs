@@ -58,7 +58,7 @@ namespace RecipesRealm.Controllers
 
                     var tId = DataAccess.TagAccessor.AddTag(tag);
 
-                    return RedirectToAction("Details", tId);
+                    return RedirectToAction("Details", new { id = tId });
                 }
 
                 ViewBag.Warning = "Could not create Tag";
@@ -139,14 +139,30 @@ namespace RecipesRealm.Controllers
         {
             try
             {
-                Tag newTag = new Tag {
-                    Tag_Name = model.Tag_Name,
-                    Tag_ID = id
-                };
+                if (ModelState.IsValid)
+                {
 
-                DataAccess.TagAccessor.EditTag(newTag);
+                    var tagExistsInDB = DataAccess.TagAccessor.CheckTagExists(model.Tag_Name);
 
-                return RedirectToAction("Details", id);
+                    if (tagExistsInDB)
+                    {
+                        ViewBag.Warning = "There is already a tag with this name in the DataBase";
+                        return View(model);
+                    }
+
+                    Tag newTag = new Tag
+                    {
+                        Tag_Name = model.Tag_Name,
+                        Tag_ID = id
+                    };
+
+                    DataAccess.TagAccessor.EditTag(newTag);
+
+                    return RedirectToAction("Details", new { id = id });
+                }
+
+                ViewBag.Warning = "Could not edit Tag";
+                return View(model);
             }
             catch (Exception ex)
             {
