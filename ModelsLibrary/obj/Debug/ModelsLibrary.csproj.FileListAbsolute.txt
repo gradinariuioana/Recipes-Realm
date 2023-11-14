@@ -1,0 +1,6 @@
+D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\Models_Library\bin\Debug\LibrarieModele.dll
+D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\Models_Library\bin\Debug\LibrarieModele.pdb
+D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\Models_Library\obj\Debug\ModelsLibrary.csproj.AssemblyReference.cache
+D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\Models_Library\obj\Debug\ModelsLibrary.csproj.CoreCompileInputs.cache
+D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\Models_Library\obj\Debug\LibrarieModele.dll
+D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\Models_Library\obj\Debug\LibrarieModele.pdb
