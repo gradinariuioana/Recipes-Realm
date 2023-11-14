@@ -4,25 +4,38 @@
     ViewBag.Title = "Delete Tag";
 }
 
-<h2>@ViewBag.Title</h2>
-
 @using (Html.BeginForm("Delete", "Tag", FormMethod.Post))
 {
-    <div>
-        <div class="row">
-            <div class="cell col form-group" data-name="name">
-                <div class="col-form-label"> @Html.DisplayNameFor(model => model.Tag_Name)</div>
-                <div class="input-group">@Html.DisplayFor(model => model.Tag_Name)</div>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            @Html.DisplayFor(model => model.Tag_Name) @ViewBag.Title
         </div>
-        <div class="row">
-            <div class="cell col form-group" data-name="recipes">
-                <div class="col-form-label"> @Html.DisplayNameFor(model => model.Tag_Recipes)</div>
-                <div class="input-group">@Html.DisplayFor(model => model.Tag_Recipes)</div>
+        <div class="card-body">
+            <div class="row mx-0">
+                <h5 class="alert-warning">@ViewBag.Warning</h5>
             </div>
-        </div>
-        <div class="row">
-            <input type="submit" value="Delete" />
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Tag_Name)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Tag_Name)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    @Html.DisplayNameFor(model => model.Tag_Recipes)
+                </div>
+                <div class="card-text col-3">
+                    @Html.DisplayFor(model => model.Tag_Recipes)
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="card-text col-3">
+                    <input type="submit" value="Delete" />
+                </div>
+            </div>
+            
         </div>
     </div>
 }
