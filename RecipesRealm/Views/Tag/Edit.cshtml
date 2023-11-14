@@ -1,0 +1,25 @@
+﻿@model RecipesRealm.ViewModels.TagViewModel
+
+@{
+    ViewBag.Title = "Tag Details";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@if (ViewBag.Warning != null)
+{
+    <h5>@ViewBag.Warning</h5>
+}
+else
+{
+    using (Html.BeginForm("Edit", "Tag", FormMethod.Post))
+    {
+        <div>
+            @Html.LabelFor(model => model.Tag_Name)
+            @Html.TextBoxFor(model => model.Tag_Name)
+            @Html.ValidationMessageFor(model => model.Tag_Name)
+        </div>
+        <br />
+        <input type="submit" value="Save" style="float: left;" id="btnSave" title="btn" name="ButtonType" />
+    }
+}
