@@ -19,5 +19,12 @@ namespace DataAccess
                 return steps;
             }
         }
+
+        public static void AddRecipeStep(RecipeStep recipeStep) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                context.RecipeSteps.Add(recipeStep);
+                context.SaveChanges();
+            }
+        }
     }
 }

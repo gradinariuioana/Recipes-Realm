@@ -16,5 +16,13 @@ namespace DataAccess
                 return ingreds;
             }
         }
+
+        public static void AddRecipeIngredient(RecipeIngredient recipeIngredient) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                context.RecipeIngredients.Add(recipeIngredient);
+
+                context.SaveChanges();
+            }
+        }
     }
 }

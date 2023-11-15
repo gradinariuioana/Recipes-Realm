@@ -67,7 +67,7 @@ namespace RecipesRealm.Controllers
             }
             catch (Exception ex)
             {
-                Utils.WriteToLog("Tags", "Create", ex.ToString());
+                Utils.WriteToLog("Tag", "Create", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }
@@ -98,7 +98,7 @@ namespace RecipesRealm.Controllers
             }
             catch (Exception ex)
             {
-                Utils.WriteToLog("Tags", "Details", ex.ToString());
+                Utils.WriteToLog("Tag", "Details", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
 
@@ -130,7 +130,7 @@ namespace RecipesRealm.Controllers
             }
             catch (Exception ex)
             {
-                Utils.WriteToLog("Tags", "Edit", ex.ToString());
+                Utils.WriteToLog("Tag", "Edit", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }
@@ -169,7 +169,7 @@ namespace RecipesRealm.Controllers
             }
             catch (Exception ex)
             {
-                Utils.WriteToLog("Tags", "Edit", ex.ToString());
+                Utils.WriteToLog("Tag", "Edit", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
 
@@ -201,7 +201,7 @@ namespace RecipesRealm.Controllers
             }
             catch (Exception ex)
             {
-                Utils.WriteToLog("Tags", "Delete", ex.ToString());
+                Utils.WriteToLog("Tag", "Delete", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }
@@ -221,7 +221,7 @@ namespace RecipesRealm.Controllers
             }
             catch (Exception ex)
             {
-                Utils.WriteToLog("Tags", "Delete", ex.ToString());
+                Utils.WriteToLog("Tag", "Delete", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
 

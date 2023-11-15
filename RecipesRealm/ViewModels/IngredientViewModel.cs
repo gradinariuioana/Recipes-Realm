@@ -2,6 +2,7 @@
 {
     public class IngredientViewModel
     {
+        public long Ingredient_ID { get; set; }
         public string Ingredient_Name { get; set; }
 
         public long Quantity { get; set; }

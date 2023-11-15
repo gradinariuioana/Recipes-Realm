@@ -9,7 +9,8 @@ using System.Web;
 namespace RecipesRealm.ViewModels
 {
     public class NutritionElementViewModel
-    {         
+    {
+        public long ID { get; set; }
         public string Element_Name { get; set; }
 
         public string Element_Description { get; set; }

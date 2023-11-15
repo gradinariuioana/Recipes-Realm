@@ -1,12 +1,8 @@
 ﻿using ModelsLibrary;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DataAccess
-{
+namespace DataAccess {
     public class TagAccessor
     {
         public static IEnumerable<Tag> GetTagsList()
@@ -53,9 +49,14 @@ namespace DataAccess
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {
-                Tag tag = context.Tags.FirstOrDefault(t => t.Tag_ID == id);
+                //remove associated RecipeTags
+                var recipeTags = context.RecipeTags.Where(r => r.Tag_ID == id);
+                context.RecipeTags.RemoveRange(recipeTags);
 
+                //remove Tag
+                Tag tag = context.Tags.FirstOrDefault(t => t.Tag_ID == id);
                 context.Tags.Remove(tag);
+
                 context.SaveChanges();
             }
         }

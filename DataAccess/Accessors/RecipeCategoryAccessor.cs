@@ -26,5 +26,12 @@ namespace DataAccess
                 return categories;
             }
         }
+
+        public static void AddRecipeCategory(RecipeCategory recipeCategory) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                var categories = context.RecipeCategories.Add(recipeCategory);
+                context.SaveChanges();
+            }
+        }
     }
 }

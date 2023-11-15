@@ -9,5 +9,7 @@
         public string Step_Title { get; set; }
 
         public bool? IsOptional { get; set; }
+
+        public string Picture_Path { get; set; }
     }
 }

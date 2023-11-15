@@ -29,5 +29,12 @@ namespace DataAccess
                 return tags;
             }
         }
+        public static void AddRecipeTag(RecipeTag recipeTag) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                var tags = context.RecipeTags.Add(recipeTag);
+                context.SaveChanges();
+            }
+        }
+
     }
 }

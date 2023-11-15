@@ -39,34 +39,129 @@ namespace RecipesRealm.Controllers
 
         // POST: Tag/Create/
         [HttpPost]
-        public ActionResult Create(TagViewModel model)
+        public ActionResult Create(RecipeViewModel model)
         {
             try
             {
                 if (ModelState.IsValid) {
 
-                    var tagExistsInDB = DataAccess.TagAccessor.CheckTagExists(model.Tag_Name);
-
-                    if (tagExistsInDB) {
-                        ViewBag.Warning = "There is already a tag with this name in the DataBase";
-                        return View(model);
-                    }
-
-                    Tag tag = new Tag {
-                        Tag_Name = model.Tag_Name
+                    Recipe recipe = new Recipe {
+                        Recipe_Name = model.Recipe_Name,
+                        Recipe_Description = model.Recipe_Description,
+                        Cooking_Time = model.Cooking_Time,
+                        Difficulty_Level = model.Difficulty_Level,
+                        Creation_Date = DateTime.Now,
+                        Servings = model.Servings,
+                        Picture_Path = model.Picture_Path,
+                        Author_User_ID = model.Author_User_ID
                     };
 
-                    var tId = DataAccess.TagAccessor.AddTag(tag);
+                    var rId = DataAccess.RecipeAccessor.AddRecipe(recipe);
 
-                    return RedirectToAction("Details", new { id = tId });
+                    //add Ingredients
+                    foreach(var ing in model.RecipeIngredients) {
+                        var ingredientExists = DataAccess.IngredientAccessor.CheckIngredientExists(ing.Ingredient_ID);
+                        long ingId;
+
+                        if (ingredientExists) {                           
+                            ingId = ing.Ingredient_ID;
+                        }
+                        else {
+                            var newIng = new Ingredient {
+                                Ingredient_Name = ing.Ingredient_Name
+                            };
+
+                            ingId = DataAccess.IngredientAccessor.AddIngredient(newIng);
+                        }
+
+                        var recipeIng = new RecipeIngredient {
+                            Recipe_ID = rId,
+                            Ingredient_ID = ingId,
+                            Other_Info = ing.Other_Info,
+                            Measurement_Unit = ing.Measurement_Unit,
+                            Quantity = ing.Quantity,
+                            IsOptional = ing.IsOptional,
+                            Category = ing.Category
+                        };
+
+                        DataAccess.RecipeIngredientAccessor.AddRecipeIngredient(recipeIng);
+                    }
+
+                    //add Steps
+                    foreach (var step in model.RecipeSteps) {                     
+
+                        var recipeStep = new RecipeStep {
+                            Recipe_ID = rId,
+                            Step_Description = step.Step_Description,
+                            Step_Number = step.Step_Number,
+                            Step_Title = step.Step_Title,
+                            Picture_Path = step.Picture_Path,
+                            IsOptional = step.IsOptional
+                        };
+
+                        DataAccess.RecipeStepAccessor.AddRecipeStep(recipeStep);
+                    }
+
+                    //add Tags
+                    foreach (var tag in model.RecipeTags) {
+                        var tagExists = DataAccess.TagAccessor.CheckTagExists(tag.Tag_Name);
+                        long tagId;
+
+                        if (tagExists) {
+                            tagId = tag.Tag_ID;
+                        }
+                        else {
+                            var newTag = new Tag {
+                                Tag_Name = tag.Tag_Name
+                            };
+
+                            tagId = DataAccess.TagAccessor.AddTag(newTag);
+                        }
+
+                        var recipeTag = new RecipeTag {
+                            Recipe_ID = rId,
+                            Tag_ID = tagId
+                        };
+
+                        DataAccess.RecipeTagAccessor.AddRecipeTag(recipeTag);
+                    }
+
+                    //add Categories
+                    foreach (var category in model.RecipeCategories) {
+                        long categoryId = category.Category_ID;
+                        
+                        var recipeCategory = new RecipeCategory {
+                            Recipe_ID = rId,
+                            Category_ID = categoryId
+                        };
+
+                        DataAccess.RecipeCategoryAccessor.AddRecipeCategory(recipeCategory);
+                    }
+
+                    //add Nutrition Elements
+
+                    foreach (var nutritionElem in model.RecipeNutritionElements) {
+                        long nutritionElemId = nutritionElem.ID;
+
+                        var recipeNE = new RecipeNutritionElement {
+                            Recipe_ID = rId,
+                            NutritionElement_ID = nutritionElemId,
+                            Measurement_Unit = nutritionElem.Measurement_Unit,
+                            Value = nutritionElem.Value                            
+                        };
+
+                        DataAccess.RecipeNutritionElementAccessor.AddRecipeNutritionElement(recipeNE);
+                    }
+
+                    return RedirectToAction("Details", new { id = rId });
                 }
 
-                ViewBag.Warning = "Could not create Tag";
+                ViewBag.Warning = "Could not create Recipe";
                 return View(model);
             }
             catch (Exception ex)
             {
-                Utils.WriteToLog("Tags", "Create", ex.ToString());
+                Utils.WriteToLog("Recipe", "Create", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }

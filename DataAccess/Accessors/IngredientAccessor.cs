@@ -9,27 +9,20 @@ namespace DataAccess
 {
     public class IngredientAccessor
     {
-        public static void ShowIngredients()
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
-                Console.WriteLine("--- Ingredients ---");
+        public static bool CheckIngredientExists(long id) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                Ingredient ingredient = context.Ingredients.FirstOrDefault(t => t.Ingredient_ID == id);
 
-                var ingredients = context.Ingredients.ToList();
-                foreach (Ingredient item in ingredients)
-                {
-                    Console.WriteLine("Ingredient Name: {0}", 
-                                       item.Ingredient_Name);
-                }
+                return ingredient != null;
             }
         }
 
-        public static string GetIngredientName(int idx)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
-                var ingredient = context.Ingredients.FirstOrDefault(i => i.Ingredient_ID == idx);
-                return ingredient.Ingredient_Name;
+        public static long AddIngredient(Ingredient ingredient) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                context.Ingredients.Add(ingredient);
+                context.SaveChanges();
+
+                return ingredient.Ingredient_ID;
             }
         }
     }

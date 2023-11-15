@@ -8,7 +8,7 @@ namespace ModelsLibrary
         [Key]
         public long ID { get; set; }
 
-        public int? Value { get; set; }
+        public long? Value { get; set; }
 
         [MaxLength(200)]
         public string Measurement_Unit { get; set; }

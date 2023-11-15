@@ -19,5 +19,12 @@ namespace DataAccess
                 return nElems;
             }
         }
+
+        public static void AddRecipeNutritionElement(RecipeNutritionElement recipeNutritionElement) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                context.RecipeNutritionElements.Add(recipeNutritionElement);
+                context.SaveChanges();
+            }
+        }
     }
 }
