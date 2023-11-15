@@ -34,7 +34,74 @@ namespace RecipesRealm.Controllers
         // GET: Tag/Create
         public ActionResult Create()
         {
-            return View();
+            var model = new RecipeViewModel();
+
+            //Get Ingredients for Select
+
+            var ingredients = DataAccess.IngredientAccessor.GetIngredientsList();
+            ICollection<IngredientViewModel> ingVMs = new List<IngredientViewModel>();
+
+            foreach(var ing in ingredients) {
+                var ingVM = new IngredientViewModel {
+                    Ingredient_ID = ing.Ingredient_ID,
+                    Ingredient_Name = ing.Ingredient_Name,
+                    Category = ing.Category
+                };
+
+                ingVMs.Add(ingVM);
+            }
+
+            model.RecipeIngredients = ingVMs;
+
+            //Get Tags for Select
+
+            var tags = DataAccess.TagAccessor.GetTagsList();
+            ICollection<TagViewModel> tagVMs = new List<TagViewModel>();
+
+            foreach (var tag in tags) {
+                var tagVM = new TagViewModel {
+                    Tag_ID = tag.Tag_ID,
+                    Tag_Name = tag.Tag_Name
+                };
+
+                tagVMs.Add(tagVM);
+            }
+
+            model.RecipeTags = tagVMs;
+
+            //Get Categories for Select
+
+            var categs = DataAccess.CategoryAccessor.GetCategoriesList();
+            ICollection<CategoryViewModel> categoryVMs = new List<CategoryViewModel>();
+
+            foreach (var category in categs) {
+                var categoryVM = new CategoryViewModel {
+                    Category_ID = category.Category_ID,
+                    Category_Name = category.Category_Name
+                };
+
+                categoryVMs.Add(categoryVM);
+            }
+
+            model.RecipeCategories = categoryVMs;
+
+            //Get Nutrition Elements for Select
+
+            var elems = DataAccess.NutritionElementAccessor.GetNutritionElementsList();
+            ICollection<NutritionElementViewModel> nutritionElementVMs = new List<NutritionElementViewModel>();
+
+            foreach (var nutritionElement in elems) {
+                var nutritionElementVM = new NutritionElementViewModel {
+                    Element_Name = nutritionElement.Element_Name,
+                    Element_Description = nutritionElement.Element_Description
+                };
+
+                nutritionElementVMs.Add(nutritionElementVM);
+            }
+
+            model.RecipeNutritionElements = nutritionElementVMs;
+
+            return View(model);
         }
 
         // POST: Tag/Create/
@@ -80,8 +147,7 @@ namespace RecipesRealm.Controllers
                             Other_Info = ing.Other_Info,
                             Measurement_Unit = ing.Measurement_Unit,
                             Quantity = ing.Quantity,
-                            IsOptional = ing.IsOptional,
-                            Category = ing.Category
+                            IsOptional = ing.IsOptional
                         };
 
                         DataAccess.RecipeIngredientAccessor.AddRecipeIngredient(recipeIng);
@@ -227,7 +293,8 @@ namespace RecipesRealm.Controllers
                         Quantity = ingred.Quantity,
                         Measurement_Unit = ingred.Measurement_Unit,
                         IsOptional = ingred.IsOptional,
-                        Other_Info = ingred.Other_Info
+                        Other_Info = ingred.Other_Info,
+                        Category = ingred.Ingredient.Category
                     };
                     recipeIngredients.Add(ingr);
                 }
@@ -260,6 +327,7 @@ namespace RecipesRealm.Controllers
 
         #endregion Details
 
+        /*
         #region Edit
 
         // GET: Tag/Edit/id
@@ -380,5 +448,6 @@ namespace RecipesRealm.Controllers
         }
 
         #endregion Delete
+        */
     }
 }

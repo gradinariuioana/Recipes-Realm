@@ -32,7 +32,7 @@ namespace DataAccess
             }
         }
 
-        public static void EditRecipe(Recipe recipe) {
+        public static void UpdateRecipe(Recipe recipe) {
             using (var context = new DatabaseRepository.RecipesRealmContext()) {
                 Recipe oldRecipe = context.Recipes.FirstOrDefault(r => r.Recipe_ID == recipe.Recipe_ID);
                 oldRecipe.Recipe_Name = recipe.Recipe_Name;
@@ -40,12 +40,11 @@ namespace DataAccess
                 oldRecipe.Difficulty_Level = recipe.Difficulty_Level;
                 oldRecipe.RecipeSteps = recipe.RecipeSteps;
 
-
                 context.SaveChanges();
             }
         }
 
-        public static void RemoveRecipe(long id) {
+        public static void DeleteRecipe(long id) {
             using (var context = new DatabaseRepository.RecipesRealmContext()) {
                 Recipe recipe = context.Recipes.FirstOrDefault(r => r.Recipe_ID == id);
 

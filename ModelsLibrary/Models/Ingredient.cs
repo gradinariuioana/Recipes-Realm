@@ -11,7 +11,10 @@ namespace ModelsLibrary
         [Required]
         [MaxLength(200)]
         public string Ingredient_Name { get; set; }
-    
+
+        [MaxLength(300)]
+        public string Category { get; set; }
+
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
     }
 }

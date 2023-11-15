@@ -17,9 +17,6 @@ namespace ModelsLibrary
         public bool? IsOptional { get; set; }
 
         [MaxLength(300)]
-        public string Category { get; set; }
-
-        [MaxLength(300)]
         public string Other_Info { get; set; }
 
         [Required]

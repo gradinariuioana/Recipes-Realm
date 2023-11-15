@@ -1,14 +1,18 @@
 ﻿using ModelsLibrary;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess
 {
     public class IngredientAccessor
     {
+        public static IEnumerable<Ingredient> GetIngredientsList() {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                var ingredients = context.Ingredients.ToList();
+                return ingredients;
+            }
+        }
+
         public static bool CheckIngredientExists(long id) {
             using (var context = new DatabaseRepository.RecipesRealmContext()) {
                 Ingredient ingredient = context.Ingredients.FirstOrDefault(t => t.Ingredient_ID == id);
