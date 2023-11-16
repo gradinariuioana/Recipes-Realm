@@ -373,7 +373,7 @@ namespace RecipesRealm.Controllers
                 recipeViewModel.AverageRating = DataAccess.RatingAccessor.GetAverageRatingForRecipe(recipe.Recipe_ID);
 
                 //categories
-                recipeViewModel.RecipeCategoriesIds = DataAccess.RecipeCategoryAccessor.GetCategoryIdsForRecipe(id);
+                recipeViewModel.RecipeCategoriesIds = DataAccess.RecipeCategoryAccessor.GetCategoriesIdsForRecipe(id);
                 ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
                 ICollection<CategoryViewModel> recipeCategories = new List<CategoryViewModel>();
 
@@ -401,19 +401,8 @@ namespace RecipesRealm.Controllers
                 recipeViewModel.AllCategories = recipeAllCategories;
 
                 //tags
-                recipeViewModel.RecipeTagsIds = DataAccess.RecipeTagAccessor.GetTagIdsForRecipe(id);
+                recipeViewModel.RecipeTagsIds = DataAccess.RecipeTagAccessor.GetTagsIdsForRecipe(id);
                 ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
-                ICollection<TagViewModel> recipeTags = new List<TagViewModel>();
-
-                var tags = DataAccess.RecipeTagAccessor.GetTagsForRecipe(id);
-                foreach (var tag in tags) {
-                    var tagViewModel = new TagViewModel {
-                        Tag_ID = tag.Tag_ID,
-                        Tag_Name = tag.Tag_Name
-                    };
-                    recipeTags.Add(tagViewModel);
-                }
-                recipeViewModel.RecipeTags = recipeTags;
 
                 var allTags = DataAccess.TagAccessor.GetTagsList();
                 foreach (var tag in allTags) {
@@ -426,7 +415,10 @@ namespace RecipesRealm.Controllers
                 recipeViewModel.AllTags = recipeAllTags;
 
                 //nutrition elements
+                recipeViewModel.RecipeNutritionElementsIds = DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsIdsForRecipe(id);
+                ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>();
                 ICollection<NutritionElementViewModel> recipeNutritionElements = new List<NutritionElementViewModel>();
+                
                 var nElems = DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsForRecipe(id);
                 foreach (var nElem in nElems) {
                     var neViewModel = new NutritionElementViewModel {
@@ -439,8 +431,21 @@ namespace RecipesRealm.Controllers
                 }
                 recipeViewModel.RecipeNutritionElements = recipeNutritionElements;
 
+                var allNElems = DataAccess.NutritionElementAccessor.GetNutritionElementsList();
+                foreach (var nElem in allNElems) {
+                    var neViewModel = new NutritionElementViewModel {
+                        Element_Name = nElem.Element_Name,
+                        Element_Description = nElem.Element_Description
+                    };
+                    recipeAllNutritionElements.Add(neViewModel);
+                }
+                recipeViewModel.AllNutritionElements = recipeAllNutritionElements;
+
                 //ingredients
+                recipeViewModel.RecipeIngredientsIds = DataAccess.RecipeIngredientAccessor.GetIngredientsIdsForRecipe(id);
+                ICollection<IngredientViewModel> recipeAllIngredients = new List<IngredientViewModel>();
                 ICollection<IngredientViewModel> recipeIngredients = new List<IngredientViewModel>();
+
                 var ingreds = DataAccess.RecipeIngredientAccessor.GetIngredientsForRecipe(id);
                 foreach (var ingred in ingreds) {
                     var ingr = new IngredientViewModel {
@@ -454,6 +459,16 @@ namespace RecipesRealm.Controllers
                     recipeIngredients.Add(ingr);
                 }
                 recipeViewModel.RecipeIngredients = recipeIngredients;
+
+                var allIngreds = DataAccess.IngredientAccessor.GetIngredientsList();
+                foreach (var ingred in allIngreds) {
+                    var ingr = new IngredientViewModel {
+                        Ingredient_Name = ingred.Ingredient_Name,
+                        Category = ingred.Category
+                    };
+                    recipeAllIngredients.Add(ingr);
+                }
+                recipeViewModel.AllIngredients = recipeAllIngredients;
 
                 //steps
                 ICollection<RecipeStepViewModel> recipeSteps = new List<RecipeStepViewModel>();

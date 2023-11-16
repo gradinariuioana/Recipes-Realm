@@ -12,9 +12,16 @@ namespace DataAccess
     {
         public static IEnumerable<RecipeNutritionElement> GetNutritionElementsForRecipe(long id)
         {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
                 var nElems = context.RecipeNutritionElements.Where(r => r.Recipe_ID == id).Include(r => r.NutritionElement).ToList();
+
+                return nElems;
+            }
+        }
+
+        public static ICollection<long> GetNutritionElementsIdsForRecipe(long id) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                var nElems = context.RecipeNutritionElements.Where(r => r.Recipe_ID == id).Select(r => r.NutritionElement_ID).ToList();
 
                 return nElems;
             }

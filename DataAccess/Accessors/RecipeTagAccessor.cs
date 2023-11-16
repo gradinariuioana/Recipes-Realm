@@ -26,11 +26,11 @@ namespace DataAccess
             }
         }
 
-        public static ICollection<long> GetTagIdsForRecipe(long id)
+        public static ICollection<long> GetTagsIdsForRecipe(long id)
         {
             using (var context = new DatabaseRepository.RecipesRealmContext())
             {
-                var tags = context.RecipeTags.Where(r => r.Recipe_ID == id).Include(r => r.Tag).Select(r => r.Tag.Tag_ID).ToList();
+                var tags = context.RecipeTags.Where(r => r.Recipe_ID == id).Select(r => r.Tag_ID).ToList();
                 return tags;
             }
         }

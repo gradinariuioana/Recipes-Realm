@@ -41,11 +41,11 @@ namespace RecipesRealm.ViewModels {
 
         public ICollection<long> RecipeCategoriesIds { get; set; }
         public ICollection<long> RecipeTagsIds { get; set; }
+        public ICollection<long> RecipeIngredientsIds { get; set; }
+        public ICollection<long> RecipeNutritionElementsIds { get; set; }
 
-        /*
-        
-    
-        public virtual ICollection<Review> Reviews { get; set; }*/
+        //public virtual ICollection<Review> Reviews { get; set; }
+
         public virtual ICollection<TagViewModel> RecipeTags { get; set; }
         public virtual ICollection<NutritionElementViewModel> RecipeNutritionElements { get; set; }
         public virtual ICollection<IngredientViewModel> RecipeIngredients { get; set; }
@@ -54,6 +54,8 @@ namespace RecipesRealm.ViewModels {
 
         public ICollection<TagViewModel> AllTags { get; set; }
         public ICollection<CategoryViewModel> AllCategories { get; set; }
+        public ICollection<IngredientViewModel> AllIngredients { get; set; }
+        public ICollection<NutritionElementViewModel> AllNutritionElements { get; set; }
 
     }
 }
