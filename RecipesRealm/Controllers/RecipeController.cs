@@ -120,7 +120,7 @@ namespace RecipesRealm.Controllers
                         Creation_Date = DateTime.Now,
                         Servings = model.Servings,
                         Picture_Path = model.Picture_Path,
-                        Author_User_ID = model.Author_User_ID
+                        Author_User_ID = DataAccess.UserAccessor.GetUserIdByName(model.Author_Name)
                     };
 
                     var rId = DataAccess.RecipeAccessor.AddRecipe(recipe);
@@ -250,16 +250,34 @@ namespace RecipesRealm.Controllers
                     return View(recipeViewModel);
                 }
 
+                recipeViewModel.Author_Name = DataAccess.UserAccessor.GetUserName(recipe.Author_User_ID);
                 recipeViewModel.Recipe_Name = recipe.Recipe_Name;
                 recipeViewModel.Recipe_Description = recipe.Recipe_Description;
                 recipeViewModel.Cooking_Time = recipe.Cooking_Time;
                 recipeViewModel.Difficulty_Level = recipe.Difficulty_Level;
                 recipeViewModel.Servings = recipe.Servings;
                 recipeViewModel.Picture_Path = recipe.Picture_Path;
+                recipeViewModel.AverageRating = DataAccess.RatingAccessor.GetAverageRatingForRecipe(recipe.Recipe_ID);
 
+                //categories
+                ICollection<CategoryViewModel> recipeCategories = new List<CategoryViewModel>();
+
+                var categs = DataAccess.RecipeCategoryAccessor.GetCategoriesForRecipe(id);
+                foreach (var categ in categs) {
+                    var categViewModel = new CategoryViewModel {
+                        Category_ID = categ.Category_ID,
+                        Category_Name = categ.Category_Name,
+                        Category_Description = categ.Category_Description
+                    };
+                    recipeCategories.Add(categViewModel);
+                }
+                recipeViewModel.RecipeCategories = recipeCategories;
+
+                //tags
                 ICollection<TagViewModel> recipeTags = new List<TagViewModel>();
+
                 var tags = DataAccess.RecipeTagAccessor.GetTagsForRecipe(id);
-                foreach(var tag in tags) {
+                foreach (var tag in tags) {
                     var tagViewModel = new TagViewModel {
                         Tag_ID = tag.Tag_ID,
                         Tag_Name = tag.Tag_Name
@@ -267,7 +285,8 @@ namespace RecipesRealm.Controllers
                     recipeTags.Add(tagViewModel);
                 }
                 recipeViewModel.RecipeTags = recipeTags;
-
+                
+                //nutrition elements
                 ICollection<NutritionElementViewModel> recipeNutritionElements = new List<NutritionElementViewModel>();
                 var nElems = DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsForRecipe(id);
                 foreach (var nElem in nElems)
@@ -283,6 +302,7 @@ namespace RecipesRealm.Controllers
                 }
                 recipeViewModel.RecipeNutritionElements = recipeNutritionElements;
 
+                //ingredients
                 ICollection<IngredientViewModel> recipeIngredients = new List<IngredientViewModel>();
                 var ingreds = DataAccess.RecipeIngredientAccessor.GetIngredientsForRecipe(id);
                 foreach (var ingred in ingreds)
@@ -300,6 +320,7 @@ namespace RecipesRealm.Controllers
                 }
                 recipeViewModel.RecipeIngredients = recipeIngredients;
 
+                //steps
                 ICollection<RecipeStepViewModel> recipeSteps = new List<RecipeStepViewModel>();
                 var steps = DataAccess.RecipeStepAccessor.GetStepsForRecipe(id);
                 foreach (var step in steps)
@@ -327,127 +348,228 @@ namespace RecipesRealm.Controllers
 
         #endregion Details
 
-        /*
+
         #region Edit
 
         // GET: Tag/Edit/id
         public ActionResult Edit(long id)
         {
-            try
-            {
-                var tag = DataAccess.TagAccessor.GetTag(id);
-                TagViewModel tagViewModel = new TagViewModel();
+            try {
+                var recipe = DataAccess.RecipeAccessor.GetRecipe(id);
+                RecipeViewModel recipeViewModel = new RecipeViewModel();
 
-                if (tag == null)
-                {
-                    ViewBag.Warning = "The tag could not be found";
-                    return View(tagViewModel);
+                if (recipe == null) {
+                    ViewBag.Warning = "The recipe could not be found";
+                    return View(recipeViewModel);
                 }
 
-                tagViewModel.Tag_Name = tag.Tag_Name;
-                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                recipeViewModel.Author_Name = DataAccess.UserAccessor.GetUserName(recipe.Author_User_ID);
+                recipeViewModel.Recipe_Name = recipe.Recipe_Name;
+                recipeViewModel.Recipe_Description = recipe.Recipe_Description;
+                recipeViewModel.Cooking_Time = recipe.Cooking_Time;
+                recipeViewModel.Difficulty_Level = recipe.Difficulty_Level;
+                recipeViewModel.Servings = recipe.Servings;
+                recipeViewModel.Picture_Path = recipe.Picture_Path;
+                recipeViewModel.AverageRating = DataAccess.RatingAccessor.GetAverageRatingForRecipe(recipe.Recipe_ID);
 
-                return View(tagViewModel);
-            }
-            catch (Exception ex)
-            {
-                Utils.WriteToLog("Tags", "Edit", ex.ToString());
-                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
-            }
-        }
+                //categories
+                recipeViewModel.RecipeCategoriesIds = DataAccess.RecipeCategoryAccessor.GetCategoryIdsForRecipe(id);
+                ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
+                ICollection<CategoryViewModel> recipeCategories = new List<CategoryViewModel>();
 
-
-        // POST: Tag/Edit/id
-        [HttpPost]
-        public ActionResult Edit(long id, TagViewModel model)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-
-                    var tagExistsInDB = DataAccess.TagAccessor.CheckTagExists(model.Tag_Name);
-
-                    if (tagExistsInDB)
-                    {
-                        ViewBag.Warning = "There is already a tag with this name in the DataBase";
-                        return View(model);
-                    }
-
-                    Tag newTag = new Tag
-                    {
-                        Tag_Name = model.Tag_Name,
-                        Tag_ID = id
+                var categs = DataAccess.RecipeCategoryAccessor.GetCategoriesForRecipe(id);
+                foreach (var categ in categs) {
+                    var categViewModel = new CategoryViewModel {
+                        Category_ID = categ.Category_ID,
+                        Category_Name = categ.Category_Name,
+                        Category_Description = categ.Category_Description
                     };
+                    recipeCategories.Add(categViewModel);
+                }
+                recipeViewModel.RecipeCategories = recipeCategories;
 
-                    DataAccess.TagAccessor.EditTag(newTag);
-
-                    return RedirectToAction("Details", new { id = id });
+                var allCategs = DataAccess.CategoryAccessor.GetCategoriesList();
+                foreach(var categ in allCategs) {
+                    var categViewModel = new CategoryViewModel {
+                        Category_ID = categ.Category_ID,
+                        Category_Name = categ.Category_Name,
+                        Category_Description = categ.Category_Description
+                    };
+                    recipeAllCategories.Add(categViewModel);
                 }
 
-                ViewBag.Warning = "Could not edit Tag";
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                Utils.WriteToLog("Tags", "Edit", ex.ToString());
-                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
-            }
+                recipeViewModel.AllCategories = recipeAllCategories;
 
-        }
+                //tags
+                recipeViewModel.RecipeTagsIds = DataAccess.RecipeTagAccessor.GetTagIdsForRecipe(id);
+                ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
+                ICollection<TagViewModel> recipeTags = new List<TagViewModel>();
 
-        #endregion Edit
-
-        #region Delete
-
-        // GET: Tag/Edit/id
-        public ActionResult Delete(long id)
-        {
-            try
-            {
-                var tag = DataAccess.TagAccessor.GetTag(id);
-                TagViewModel tagViewModel = new TagViewModel();
-
-                if (tag == null)
-                {
-                    ViewBag.Warning = "The tag could not be found";
-                    return View(tagViewModel);
+                var tags = DataAccess.RecipeTagAccessor.GetTagsForRecipe(id);
+                foreach (var tag in tags) {
+                    var tagViewModel = new TagViewModel {
+                        Tag_ID = tag.Tag_ID,
+                        Tag_Name = tag.Tag_Name
+                    };
+                    recipeTags.Add(tagViewModel);
                 }
+                recipeViewModel.RecipeTags = recipeTags;
 
-                tagViewModel.Tag_Name = tag.Tag_Name;
-                tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                var allTags = DataAccess.TagAccessor.GetTagsList();
+                foreach (var tag in allTags) {
+                    var tagViewModel = new TagViewModel {
+                        Tag_ID = tag.Tag_ID,
+                        Tag_Name = tag.Tag_Name
+                    };
+                    recipeAllTags.Add(tagViewModel);
+                }
+                recipeViewModel.AllTags = recipeAllTags;
 
-                return View(tagViewModel);
+                //nutrition elements
+                ICollection<NutritionElementViewModel> recipeNutritionElements = new List<NutritionElementViewModel>();
+                var nElems = DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsForRecipe(id);
+                foreach (var nElem in nElems) {
+                    var neViewModel = new NutritionElementViewModel {
+                        Element_Name = nElem.NutritionElement.Element_Name,
+                        Element_Description = nElem.NutritionElement.Element_Description,
+                        Measurement_Unit = nElem.Measurement_Unit,
+                        Value = nElem.Value
+                    };
+                    recipeNutritionElements.Add(neViewModel);
+                }
+                recipeViewModel.RecipeNutritionElements = recipeNutritionElements;
+
+                //ingredients
+                ICollection<IngredientViewModel> recipeIngredients = new List<IngredientViewModel>();
+                var ingreds = DataAccess.RecipeIngredientAccessor.GetIngredientsForRecipe(id);
+                foreach (var ingred in ingreds) {
+                    var ingr = new IngredientViewModel {
+                        Ingredient_Name = ingred.Ingredient.Ingredient_Name,
+                        Quantity = ingred.Quantity,
+                        Measurement_Unit = ingred.Measurement_Unit,
+                        IsOptional = ingred.IsOptional,
+                        Other_Info = ingred.Other_Info,
+                        Category = ingred.Ingredient.Category
+                    };
+                    recipeIngredients.Add(ingr);
+                }
+                recipeViewModel.RecipeIngredients = recipeIngredients;
+
+                //steps
+                ICollection<RecipeStepViewModel> recipeSteps = new List<RecipeStepViewModel>();
+                var steps = DataAccess.RecipeStepAccessor.GetStepsForRecipe(id);
+                foreach (var step in steps) {
+                    var stepVM = new RecipeStepViewModel {
+                        Step_Number = step.Step_Number,
+                        Step_Title = step.Step_Title,
+                        Step_Description = step.Step_Description,
+                        IsOptional = step.IsOptional
+                    };
+                    recipeSteps.Add(stepVM);
+                }
+                recipeViewModel.RecipeSteps = recipeSteps;
+
+                return View(recipeViewModel);
             }
-            catch (Exception ex)
-            {
-                Utils.WriteToLog("Tags", "Delete", ex.ToString());
+            catch (Exception ex) {
+                Utils.WriteToLog("Recipe", "Edit", ex.ToString());
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }
 
+        /*
+       // POST: Tag/Edit/id
+       [HttpPost]
+       public ActionResult Edit(long id, TagViewModel model)
+       {
+           try
+           {
+               if (ModelState.IsValid)
+               {
 
-        // POST: Tag/Delete/id
+                   var tagExistsInDB = DataAccess.TagAccessor.CheckTagExists(model.Tag_Name);
 
-        [HttpPost]
-        [ActionName("Delete")]
-        public ActionResult DeleteTag(long id)
-        {
-            try
-            {
-                DataAccess.TagAccessor.RemoveTag(id);
+                   if (tagExistsInDB)
+                   {
+                       ViewBag.Warning = "There is already a tag with this name in the DataBase";
+                       return View(model);
+                   }
 
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                Utils.WriteToLog("Tags", "Delete", ex.ToString());
-                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
-            }
+                   Tag newTag = new Tag
+                   {
+                       Tag_Name = model.Tag_Name,
+                       Tag_ID = id
+                   };
 
-        }
+                   DataAccess.TagAccessor.EditTag(newTag);
 
-        #endregion Delete
-        */
+                   return RedirectToAction("Details", new { id = id });
+               }
+
+               ViewBag.Warning = "Could not edit Tag";
+               return View(model);
+           }
+           catch (Exception ex)
+           {
+               Utils.WriteToLog("Tags", "Edit", ex.ToString());
+               return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+           }
+
+       }*/
+
+       #endregion Edit
+
+        /*
+       #region Delete
+
+       // GET: Tag/Edit/id
+       public ActionResult Delete(long id)
+       {
+           try
+           {
+               var tag = DataAccess.TagAccessor.GetTag(id);
+               TagViewModel tagViewModel = new TagViewModel();
+
+               if (tag == null)
+               {
+                   ViewBag.Warning = "The tag could not be found";
+                   return View(tagViewModel);
+               }
+
+               tagViewModel.Tag_Name = tag.Tag_Name;
+               tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+
+               return View(tagViewModel);
+           }
+           catch (Exception ex)
+           {
+               Utils.WriteToLog("Tags", "Delete", ex.ToString());
+               return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+           }
+       }
+
+
+       // POST: Tag/Delete/id
+
+       [HttpPost]
+       [ActionName("Delete")]
+       public ActionResult DeleteTag(long id)
+       {
+           try
+           {
+               DataAccess.TagAccessor.RemoveTag(id);
+
+               return RedirectToAction("Index");
+           }
+           catch (Exception ex)
+           {
+               Utils.WriteToLog("Tags", "Delete", ex.ToString());
+               return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+           }
+
+       }
+
+       #endregion Delete
+       */
     }
 }

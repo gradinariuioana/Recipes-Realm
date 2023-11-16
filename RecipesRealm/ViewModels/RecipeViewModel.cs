@@ -36,10 +36,11 @@ namespace RecipesRealm.ViewModels {
         [DisplayName("Author")]
         public string Author_Name { get; set; }
 
-        public long Author_User_ID { get; set; }
-
         [DisplayName("Average Rating")]
         public long? AverageRating { get; set; }
+
+        public ICollection<long> RecipeCategoriesIds { get; set; }
+        public ICollection<long> RecipeTagsIds { get; set; }
 
         /*
         
@@ -50,6 +51,9 @@ namespace RecipesRealm.ViewModels {
         public virtual ICollection<IngredientViewModel> RecipeIngredients { get; set; }
         public virtual ICollection<RecipeStepViewModel> RecipeSteps { get; set; }
         public virtual ICollection<CategoryViewModel> RecipeCategories { get; set; }
+
+        public ICollection<TagViewModel> AllTags { get; set; }
+        public ICollection<CategoryViewModel> AllCategories { get; set; }
 
     }
 }

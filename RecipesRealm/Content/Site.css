@@ -247,3 +247,29 @@
 	font-family: Cabin,sans-serif;
 	font-weight: lighter;
 }
+
+.star-rating input {
+	display: none;
+}
+
+.star-rating {
+	margin: 50px auto;
+	display: table;
+	width: 350px;
+}
+
+.star-rating label {
+	padding: 10px;
+	float: right;
+	font-size: 44px;
+	color: #eee;
+}
+
+.star-rating input:not(:checked) ~ label:hover,
+.star-rating input:not(:checked) ~ label:hover ~ label {
+	color: #16CADE;
+}
+
+.star-rating input:checked ~ label:before {
+	color: #337179 !important;
+}

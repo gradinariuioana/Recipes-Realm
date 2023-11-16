@@ -18,14 +18,40 @@
                     <div class="col-7 single-recipe-details">
                         <h1>@Html.DisplayFor(model => model.Recipe_Name)</h1>  
                         <div class="row">
-                            <div class="categories-wrapper">
-                                @{/*
+                            <div class="col-12 average-rating">
+                                <div class="star-rating">
+                                    <div class="star-input">
+                                        @{
+                                            var rating = Model.AverageRating;
+                                            for (var i = 5; i > 0; i--) {
+                                                if (i < rating) {
+                                                    <input type="radio" name="rating" id="rating-@i" checked>
+                                                }
+                                                else {
+                                                    <input type="radio" name="rating" id="rating-@i">
+                                                }
+                                                <label for="rating-@i" class="fas fa-star"></label>
+                                            }
+                                        }
+                                    </div>
+                                    <div>
+                                        (@rating / 5)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 userInfo">
+                                <div class="title">
+                                    @Html.DisplayFor(model => model.Author_Name);
+                                </div>
+                            </div>
+                            <div class="col-12 categories-wrapper">
+                                @{
                                     foreach (var cat in Model.RecipeCategories) {
                                         <div class="single-category">
-                                            <a href="/Category/Details/@Html.DisplayFor(modelItem => cat.Category_Id)">@Html.DisplayFor(modelItem => cat.Category_Name)</a>
+                                            <a href="/Category/Details/@Html.DisplayFor(modelItem => cat.Category_ID)">@Html.DisplayFor(modelItem => cat.Category_Name)</a>
                                         </div>
                                     }
-                                */}
+                                }
                             </div>
                         </div>
 

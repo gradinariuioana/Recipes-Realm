@@ -23,6 +23,13 @@ namespace DataAccess
             }
         }
 
+        public static ICollection<long> GetCategoryIdsForRecipe(long id) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                var categories = context.RecipeCategories.Where(r => r.Recipe_ID == id).Include(r => r.Category).Select(r => r.Category.Category_ID).ToList();
+                return categories;
+            }
+        }
+
         public static void AddRecipeCategory(RecipeCategory recipeCategory) {
             using (var context = new DatabaseRepository.RecipesRealmContext()) {
                 var categories = context.RecipeCategories.Add(recipeCategory);

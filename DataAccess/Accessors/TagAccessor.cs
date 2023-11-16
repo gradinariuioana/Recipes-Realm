@@ -7,8 +7,7 @@ namespace DataAccess {
     {
         public static IEnumerable<Tag> GetTagsList()
         {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
                 var tags = context.Tags.ToList();
                 return tags;
             }
@@ -16,8 +15,7 @@ namespace DataAccess {
 
         public static long AddTag(Tag tag)
         {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
                 context.Tags.Add(tag);
                 context.SaveChanges();
 

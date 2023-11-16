@@ -26,5 +26,21 @@ namespace DataAccess
                 context.SaveChanges();
             }
         }
+
+        public static void DeleteAllStepsForRecipe(long recipeId) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                var recipeIngreds = context.RecipeSteps.Where(r => r.Recipe_ID == recipeId).ToList();
+
+                context.RecipeSteps.RemoveRange(recipeIngreds);
+                context.SaveChanges();
+            }
+        }
+
+        public static void DeleteRecipeStep(RecipeStep recipeStep) {
+            using (var context = new DatabaseRepository.RecipesRealmContext()) {
+                context.RecipeSteps.Remove(recipeStep);
+                context.SaveChanges();
+            }
+        }
     }
 }
