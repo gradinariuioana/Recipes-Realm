@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using ModelsLibrary;
 using RecipesRealm.ViewModels;
 using System;
@@ -8,103 +9,56 @@ using System.Web.Mvc;
 
 namespace RecipesRealm.Controllers
 {
-    public class RecipeController : Controller
-    {
+    public class RecipeController : BaseController { 
+
         public ActionResult Index()
         {
-            IEnumerable<TagViewModel> tagViewModels = new List<TagViewModel>();
-            IEnumerable<Tag> tags = DataAccess.TagAccessor.GetTagsList();
+            IEnumerable<RecipeViewModel> recipeViewModels = new List<RecipeViewModel>();
+            IEnumerable<Recipe> recipes = DataAccess.RecipeAccessor.GetRecipesList();
 
-            foreach (Tag tag in tags)
-            {
-                var tagViewModel = new TagViewModel
-                {
-                    Tag_Name = tag.Tag_Name,
-                    Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList())
-                };
+            foreach (Recipe r in recipes)
+                recipeViewModels = recipeViewModels.Append(AutoMapperConfig.Mapper.Map<RecipeViewModel>(r));
 
-                tagViewModels = tagViewModels.Append(tagViewModel);
-            }
-
-            return View(tagViewModels);
+            return View(recipeViewModels);
         }
 
         #region Create
 
-        // GET: Tag/Create
         public ActionResult Create()
         {
-            var model = new RecipeViewModel();
+            var recipeViewModel = new RecipeViewModel();
 
-            //Get Ingredients for Select
+            //all categories
+            ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
+            var allCategs = DataAccess.CategoryAccessor.GetCategoriesList();
+            foreach (var categ in allCategs)
+                recipeAllCategories.Add(AutoMapperConfig.Mapper.Map<CategoryViewModel>(categ));
+            recipeViewModel.AllCategories = recipeAllCategories;
 
-            var ingredients = DataAccess.IngredientAccessor.GetIngredientsList();
-            ICollection<IngredientViewModel> ingVMs = new List<IngredientViewModel>();
+            //all tags
+            ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
+            var allTags = DataAccess.TagAccessor.GetTagsList();
+            foreach (var tag in allTags)
+                recipeAllTags.Add(AutoMapperConfig.Mapper.Map<TagViewModel>(tag));
+            recipeViewModel.AllTags = recipeAllTags;
 
-            foreach(var ing in ingredients) {
-                var ingVM = new IngredientViewModel {
-                    Ingredient_ID = ing.Ingredient_ID,
-                    Ingredient_Name = ing.Ingredient_Name,
-                    Category = ing.Category
-                };
+            //all nutrition elements
+            ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>();
+            var allNElems = DataAccess.NutritionElementAccessor.GetNutritionElementsList();
+            foreach (var nElem in allNElems)
+                recipeAllNutritionElements.Add(AutoMapperConfig.Mapper.Map<NutritionElementViewModel>(nElem));
+            recipeViewModel.AllNutritionElements = recipeAllNutritionElements;
 
-                ingVMs.Add(ingVM);
-            }
+            //all ingredients
+            ICollection<IngredientViewModel> recipeAllIngredients = new List<IngredientViewModel>();
+            var allIngreds = DataAccess.IngredientAccessor.GetIngredientsList();
+            foreach (var ingred in allIngreds)
+                recipeAllIngredients.Add(AutoMapperConfig.Mapper.Map<IngredientViewModel>(ingred));
+            recipeViewModel.AllIngredients = recipeAllIngredients;
 
-            model.RecipeIngredients = ingVMs;
-
-            //Get Tags for Select
-
-            var tags = DataAccess.TagAccessor.GetTagsList();
-            ICollection<TagViewModel> tagVMs = new List<TagViewModel>();
-
-            foreach (var tag in tags) {
-                var tagVM = new TagViewModel {
-                    Tag_ID = tag.Tag_ID,
-                    Tag_Name = tag.Tag_Name
-                };
-
-                tagVMs.Add(tagVM);
-            }
-
-            model.RecipeTags = tagVMs;
-
-            //Get Categories for Select
-
-            var categs = DataAccess.CategoryAccessor.GetCategoriesList();
-            ICollection<CategoryViewModel> categoryVMs = new List<CategoryViewModel>();
-
-            foreach (var category in categs) {
-                var categoryVM = new CategoryViewModel {
-                    Category_ID = category.Category_ID,
-                    Category_Name = category.Category_Name
-                };
-
-                categoryVMs.Add(categoryVM);
-            }
-
-            model.RecipeCategories = categoryVMs;
-
-            //Get Nutrition Elements for Select
-
-            var elems = DataAccess.NutritionElementAccessor.GetNutritionElementsList();
-            ICollection<NutritionElementViewModel> nutritionElementVMs = new List<NutritionElementViewModel>();
-
-            foreach (var nutritionElement in elems) {
-                var nutritionElementVM = new NutritionElementViewModel {
-                    Element_Name = nutritionElement.Element_Name,
-                    Element_Description = nutritionElement.Element_Description
-                };
-
-                nutritionElementVMs.Add(nutritionElementVM);
-            }
-
-            model.RecipeNutritionElements = nutritionElementVMs;
-
-            return View(model);
+            return View(recipeViewModel);
         }
 
-        // POST: Tag/Create/
         [HttpPost]
         public ActionResult Create(RecipeViewModel model)
         {
@@ -236,7 +190,6 @@ namespace RecipesRealm.Controllers
 
         #region Details
 
-        // GET: Recipe/Details/id
         public ActionResult Details(long id)
         {
             try
@@ -250,91 +203,7 @@ namespace RecipesRealm.Controllers
                     return View(recipeViewModel);
                 }
 
-                recipeViewModel.Author_Name = DataAccess.UserAccessor.GetUserName(recipe.Author_User_ID);
-                recipeViewModel.Recipe_Name = recipe.Recipe_Name;
-                recipeViewModel.Recipe_Description = recipe.Recipe_Description;
-                recipeViewModel.Cooking_Time = recipe.Cooking_Time;
-                recipeViewModel.Difficulty_Level = recipe.Difficulty_Level;
-                recipeViewModel.Servings = recipe.Servings;
-                recipeViewModel.Picture_Path = recipe.Picture_Path;
-                recipeViewModel.AverageRating = DataAccess.RatingAccessor.GetAverageRatingForRecipe(recipe.Recipe_ID);
-
-                //categories
-                ICollection<CategoryViewModel> recipeCategories = new List<CategoryViewModel>();
-
-                var categs = DataAccess.RecipeCategoryAccessor.GetCategoriesForRecipe(id);
-                foreach (var categ in categs) {
-                    var categViewModel = new CategoryViewModel {
-                        Category_ID = categ.Category_ID,
-                        Category_Name = categ.Category_Name,
-                        Category_Description = categ.Category_Description
-                    };
-                    recipeCategories.Add(categViewModel);
-                }
-                recipeViewModel.RecipeCategories = recipeCategories;
-
-                //tags
-                ICollection<TagViewModel> recipeTags = new List<TagViewModel>();
-
-                var tags = DataAccess.RecipeTagAccessor.GetTagsForRecipe(id);
-                foreach (var tag in tags) {
-                    var tagViewModel = new TagViewModel {
-                        Tag_ID = tag.Tag_ID,
-                        Tag_Name = tag.Tag_Name
-                    };
-                    recipeTags.Add(tagViewModel);
-                }
-                recipeViewModel.RecipeTags = recipeTags;
-                
-                //nutrition elements
-                ICollection<NutritionElementViewModel> recipeNutritionElements = new List<NutritionElementViewModel>();
-                var nElems = DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsForRecipe(id);
-                foreach (var nElem in nElems)
-                {
-                    var neViewModel = new NutritionElementViewModel
-                    {
-                        Element_Name = nElem.NutritionElement.Element_Name,
-                        Element_Description = nElem.NutritionElement.Element_Description,
-                        Measurement_Unit = nElem.Measurement_Unit,
-                        Value = nElem.Value
-                    };
-                    recipeNutritionElements.Add(neViewModel);
-                }
-                recipeViewModel.RecipeNutritionElements = recipeNutritionElements;
-
-                //ingredients
-                ICollection<IngredientViewModel> recipeIngredients = new List<IngredientViewModel>();
-                var ingreds = DataAccess.RecipeIngredientAccessor.GetIngredientsForRecipe(id);
-                foreach (var ingred in ingreds)
-                {
-                    var ingr = new IngredientViewModel
-                    {
-                        Ingredient_Name = ingred.Ingredient.Ingredient_Name,
-                        Quantity = ingred.Quantity,
-                        Measurement_Unit = ingred.Measurement_Unit,
-                        IsOptional = ingred.IsOptional,
-                        Other_Info = ingred.Other_Info,
-                        Category = ingred.Ingredient.Category
-                    };
-                    recipeIngredients.Add(ingr);
-                }
-                recipeViewModel.RecipeIngredients = recipeIngredients;
-
-                //steps
-                ICollection<RecipeStepViewModel> recipeSteps = new List<RecipeStepViewModel>();
-                var steps = DataAccess.RecipeStepAccessor.GetStepsForRecipe(id);
-                foreach (var step in steps)
-                {
-                    var stepVM = new RecipeStepViewModel
-                    {
-                        Step_Number = step.Step_Number,
-                        Step_Title = step.Step_Title,
-                        Step_Description = step.Step_Description,
-                        IsOptional = step.IsOptional
-                    };
-                    recipeSteps.Add(stepVM);
-                }
-                recipeViewModel.RecipeSteps = recipeSteps;
+                recipeViewModel = AutoMapperConfig.Mapper.Map<RecipeViewModel>(recipe);            
 
                 return View(recipeViewModel);
             }
@@ -351,138 +220,47 @@ namespace RecipesRealm.Controllers
 
         #region Edit
 
-        // GET: Tag/Edit/id
         public ActionResult Edit(long id)
         {
             try {
                 var recipe = DataAccess.RecipeAccessor.GetRecipe(id);
                 RecipeViewModel recipeViewModel = new RecipeViewModel();
 
-                if (recipe == null) {
+                if (recipe == null)
+                {
                     ViewBag.Warning = "The recipe could not be found";
                     return View(recipeViewModel);
                 }
 
-                recipeViewModel.Author_Name = DataAccess.UserAccessor.GetUserName(recipe.Author_User_ID);
-                recipeViewModel.Recipe_Name = recipe.Recipe_Name;
-                recipeViewModel.Recipe_Description = recipe.Recipe_Description;
-                recipeViewModel.Cooking_Time = recipe.Cooking_Time;
-                recipeViewModel.Difficulty_Level = recipe.Difficulty_Level;
-                recipeViewModel.Servings = recipe.Servings;
-                recipeViewModel.Picture_Path = recipe.Picture_Path;
-                recipeViewModel.AverageRating = DataAccess.RatingAccessor.GetAverageRatingForRecipe(recipe.Recipe_ID);
+                recipeViewModel = AutoMapperConfig.Mapper.Map<RecipeViewModel>(recipe);
 
-                //categories
-                recipeViewModel.RecipeCategoriesIds = DataAccess.RecipeCategoryAccessor.GetCategoriesIdsForRecipe(id);
+                //all categories
                 ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
-                ICollection<CategoryViewModel> recipeCategories = new List<CategoryViewModel>();
-
-                var categs = DataAccess.RecipeCategoryAccessor.GetCategoriesForRecipe(id);
-                foreach (var categ in categs) {
-                    var categViewModel = new CategoryViewModel {
-                        Category_ID = categ.Category_ID,
-                        Category_Name = categ.Category_Name,
-                        Category_Description = categ.Category_Description
-                    };
-                    recipeCategories.Add(categViewModel);
-                }
-                recipeViewModel.RecipeCategories = recipeCategories;
-
                 var allCategs = DataAccess.CategoryAccessor.GetCategoriesList();
-                foreach(var categ in allCategs) {
-                    var categViewModel = new CategoryViewModel {
-                        Category_ID = categ.Category_ID,
-                        Category_Name = categ.Category_Name,
-                        Category_Description = categ.Category_Description
-                    };
-                    recipeAllCategories.Add(categViewModel);
-                }
-
+                foreach(var categ in allCategs)
+                    recipeAllCategories.Add(AutoMapperConfig.Mapper.Map<CategoryViewModel>(categ));
                 recipeViewModel.AllCategories = recipeAllCategories;
 
-                //tags
-                recipeViewModel.RecipeTagsIds = DataAccess.RecipeTagAccessor.GetTagsIdsForRecipe(id);
+                //all tags
                 ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
-
                 var allTags = DataAccess.TagAccessor.GetTagsList();
-                foreach (var tag in allTags) {
-                    var tagViewModel = new TagViewModel {
-                        Tag_ID = tag.Tag_ID,
-                        Tag_Name = tag.Tag_Name
-                    };
-                    recipeAllTags.Add(tagViewModel);
-                }
+                foreach (var tag in allTags)
+                    recipeAllTags.Add(AutoMapperConfig.Mapper.Map<TagViewModel>(tag));
                 recipeViewModel.AllTags = recipeAllTags;
 
-                //nutrition elements
-                recipeViewModel.RecipeNutritionElementsIds = DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsIdsForRecipe(id);
-                ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>();
-                ICollection<NutritionElementViewModel> recipeNutritionElements = new List<NutritionElementViewModel>();
-                
-                var nElems = DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsForRecipe(id);
-                foreach (var nElem in nElems) {
-                    var neViewModel = new NutritionElementViewModel {
-                        Element_Name = nElem.NutritionElement.Element_Name,
-                        Element_Description = nElem.NutritionElement.Element_Description,
-                        Measurement_Unit = nElem.Measurement_Unit,
-                        Value = nElem.Value
-                    };
-                    recipeNutritionElements.Add(neViewModel);
-                }
-                recipeViewModel.RecipeNutritionElements = recipeNutritionElements;
-
+                //all nutrition elements
+                ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>(); 
                 var allNElems = DataAccess.NutritionElementAccessor.GetNutritionElementsList();
-                foreach (var nElem in allNElems) {
-                    var neViewModel = new NutritionElementViewModel {
-                        Element_Name = nElem.Element_Name,
-                        Element_Description = nElem.Element_Description
-                    };
-                    recipeAllNutritionElements.Add(neViewModel);
-                }
+                foreach (var nElem in allNElems)
+                    recipeAllNutritionElements.Add(AutoMapperConfig.Mapper.Map<NutritionElementViewModel>(nElem));
                 recipeViewModel.AllNutritionElements = recipeAllNutritionElements;
 
-                //ingredients
-                recipeViewModel.RecipeIngredientsIds = DataAccess.RecipeIngredientAccessor.GetIngredientsIdsForRecipe(id);
+                //all ingredients
                 ICollection<IngredientViewModel> recipeAllIngredients = new List<IngredientViewModel>();
-                ICollection<IngredientViewModel> recipeIngredients = new List<IngredientViewModel>();
-
-                var ingreds = DataAccess.RecipeIngredientAccessor.GetIngredientsForRecipe(id);
-                foreach (var ingred in ingreds) {
-                    var ingr = new IngredientViewModel {
-                        Ingredient_Name = ingred.Ingredient.Ingredient_Name,
-                        Quantity = ingred.Quantity,
-                        Measurement_Unit = ingred.Measurement_Unit,
-                        IsOptional = ingred.IsOptional,
-                        Other_Info = ingred.Other_Info,
-                        Category = ingred.Ingredient.Category
-                    };
-                    recipeIngredients.Add(ingr);
-                }
-                recipeViewModel.RecipeIngredients = recipeIngredients;
-
                 var allIngreds = DataAccess.IngredientAccessor.GetIngredientsList();
-                foreach (var ingred in allIngreds) {
-                    var ingr = new IngredientViewModel {
-                        Ingredient_Name = ingred.Ingredient_Name,
-                        Category = ingred.Category
-                    };
-                    recipeAllIngredients.Add(ingr);
-                }
+                foreach (var ingred in allIngreds)
+                    recipeAllIngredients.Add(AutoMapperConfig.Mapper.Map<IngredientViewModel>(ingred));
                 recipeViewModel.AllIngredients = recipeAllIngredients;
-
-                //steps
-                ICollection<RecipeStepViewModel> recipeSteps = new List<RecipeStepViewModel>();
-                var steps = DataAccess.RecipeStepAccessor.GetStepsForRecipe(id);
-                foreach (var step in steps) {
-                    var stepVM = new RecipeStepViewModel {
-                        Step_Number = step.Step_Number,
-                        Step_Title = step.Step_Title,
-                        Step_Description = step.Step_Description,
-                        IsOptional = step.IsOptional
-                    };
-                    recipeSteps.Add(stepVM);
-                }
-                recipeViewModel.RecipeSteps = recipeSteps;
 
                 return View(recipeViewModel);
             }
@@ -534,57 +312,58 @@ namespace RecipesRealm.Controllers
 
        #endregion Edit
 
-        /*
+       
        #region Delete
 
-       // GET: Tag/Edit/id
        public ActionResult Delete(long id)
        {
-           try
-           {
-               var tag = DataAccess.TagAccessor.GetTag(id);
-               TagViewModel tagViewModel = new TagViewModel();
+            try
+            {
+                var recipe = DataAccess.RecipeAccessor.GetRecipe(id);
+                RecipeViewModel recipeViewModel = new RecipeViewModel();
 
-               if (tag == null)
-               {
-                   ViewBag.Warning = "The tag could not be found";
-                   return View(tagViewModel);
-               }
+                if (recipe == null)
+                {
+                    ViewBag.Warning = "The recipe could not be found";
+                    return View(recipeViewModel);
+                }
 
-               tagViewModel.Tag_Name = tag.Tag_Name;
-               tagViewModel.Tag_Recipes = string.Join(", ", DataAccess.RecipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Select(r => r.Recipe_Name).ToList());
+                recipeViewModel = AutoMapperConfig.Mapper.Map<RecipeViewModel>(recipe);
 
-               return View(tagViewModel);
-           }
-           catch (Exception ex)
-           {
-               Utils.WriteToLog("Tags", "Delete", ex.ToString());
-               return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
-           }
-       }
+                return View(recipeViewModel);
+            }
+            catch (Exception ex)
+            {
+                Utils.WriteToLog("Recipe", "Delete", ex.ToString());
+                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+            }
+        }
 
-
-       // POST: Tag/Delete/id
-
+        
        [HttpPost]
-       [ActionName("Delete")]
-       public ActionResult DeleteTag(long id)
+       public ActionResult DeleteTag(RecipeViewModel model)
        {
            try
            {
-               DataAccess.TagAccessor.RemoveTag(id);
+                DataAccess.RecipeTagAccessor.DeleteAllTagsForRecipe(model.Recipe_ID);
+                DataAccess.RecipeStepAccessor.DeleteAllStepsForRecipe(model.Recipe_ID);
+                DataAccess.RecipeNutritionElementAccessor.DeleteAllNutritionElementsForRecipe(model.Recipe_ID);
+                DataAccess.RecipeCategoryAccessor.DeleteAllCategoriesForRecipe(model.Recipe_ID);
+                DataAccess.RecipeIngredientAccessor.DeleteAllIngredientsForRecipe(model.Recipe_ID);
 
-               return RedirectToAction("Index");
+                DataAccess.RecipeAccessor.DeleteRecipe(model.Recipe_ID);
+
+                return RedirectToAction("Index");
            }
            catch (Exception ex)
            {
-               Utils.WriteToLog("Tags", "Delete", ex.ToString());
+               Utils.WriteToLog("Recipe", "Delete", ex.ToString());
                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
            }
 
        }
 
        #endregion Delete
-       */
+ 
     }
 }

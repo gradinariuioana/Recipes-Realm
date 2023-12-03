@@ -1,6 +1,7 @@
 ﻿using ModelsLibrary;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,14 +12,26 @@ namespace DataAccess
     {
         public static IEnumerable<Recipe> GetRecipesList() {
             using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var recipes = context.Recipes.ToList();
+                var recipes = context.Recipes.Include(r => r.RecipeIngredients).Include("RecipeIngredients.Ingredient")
+                    .Include(r => r.RecipeSteps)
+                    .Include(r => r.RecipeCategories).Include("RecipeCategories.Category")
+                    .Include(r => r.RecipeTags).Include("RecipeTags.Tag")
+                    .Include(r => r.User)
+                    .Include(r => r.RecipeNutritionElements).Include("RecipeNutritionElements.NutritionElement")
+                    .ToList();
                 return recipes;
             }
         }
 
         public static Recipe GetRecipe(long id) {
             using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var recipe = context.Recipes.FirstOrDefault(r => r.Recipe_ID == id);
+                var recipe = context.Recipes.Include(r => r.RecipeIngredients).Include("RecipeIngredients.Ingredient")
+                    .Include(r => r.RecipeSteps)
+                    .Include(r => r.RecipeCategories).Include("RecipeCategories.Category")
+                    .Include(r => r.RecipeTags).Include("RecipeTags.Tag")
+                    .Include(r => r.User)
+                    .Include(r => r.RecipeNutritionElements).Include("RecipeNutritionElements.NutritionElement")
+                    .FirstOrDefault(r => r.Recipe_ID == id);
                 return recipe;
             }
         }

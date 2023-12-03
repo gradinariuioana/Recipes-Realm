@@ -11,6 +11,9 @@ using System.Web;
 
 namespace RecipesRealm.ViewModels {
     public class RecipeViewModel {
+
+        public long Recipe_ID { get; set; }
+
         [DisplayName("Recipe Name")]
         [Required(ErrorMessage = "A Recipe Name is required")]
         public string Recipe_Name { get; set; }
@@ -39,6 +42,7 @@ namespace RecipesRealm.ViewModels {
         [DisplayName("Average Rating")]
         public long? AverageRating { get; set; }
 
+        [DisplayName("Categories")]
         public ICollection<long> RecipeCategoriesIds { get; set; }
         public ICollection<long> RecipeTagsIds { get; set; }
         public ICollection<long> RecipeIngredientsIds { get; set; }

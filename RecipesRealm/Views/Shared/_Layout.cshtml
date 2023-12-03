@@ -4,28 +4,77 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Recipes Realm", "Index", "Recipe", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Tags", "Index", "Tag")</li>
-                    <li>@Html.ActionLink("Categories", "Index", "Category")</li>
-                </ul>
+    <header id="main-header" class="main-header ">
+        <div class="header-content stick ">
+            <div id="my-header" class="my-header container-fluid">
+                <div class="container">
+                    <div class="navbar-header">
+                        <a id="main-logo" class="logo" href="/">
+                            <img src="~/Content/Assets/Logo.png" alt="logo" />
+                        </a>
+                    </div>
+                    <nav id="site-nav" class="site-nav">
+                        <div class="nav-1 ">
+                            <ul>
+                                <li>
+                                    @Html.ActionLink("Recipes", "Index", "Recipe")
+                                </li>
+                                <li class="has-submenu">
+                                    @Html.ActionLink("Discover", "Index", "Category")
+                                    <ul id="dropdown" class="submenu submenu-category row">
+                                        @foreach (var el in ViewBag.LayoutModel.Categories)
+                                        {
+                                            string catName = el.Category_Name;
+                                            <li class="submenu-heading col-4">
+                                                @Html.ActionLink(catName, "Details", "Category", new { id = el.Category_ID }, new { })
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Recommendations", "Index", "Recommendation")
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="nav-2">
+                            <ul>
+                                <li class="site-search ">
+                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 27.6 27.6"><path d="M26.5 22.7l-4.4-4.4c1.2-1.8 1.9-4 1.9-6.3C24 5.5 18.8.3 12.3.3 5.8.3.6 5.6.6 12s5.2 11.7 11.7 11.7c2.3 0 4.5-.7 6.3-1.9l4.4 4.4c1 1 2.6 1 3.5 0 1-.9 1-2.5 0-3.5zm-14.2-2.3c-4.6 0-8.3-3.7-8.3-8.3s3.7-8.3 8.3-8.3c4.6 0 8.3 3.7 8.3 8.3 0 4.5-3.7 8.3-8.3 8.3z" /></svg></span>
+                                    <div id="search" class="container-fluid">
+                                        <div class="container">
+                                            <div class="search-input">
+                                                <div class="input-wrapper">
+                                                    <i class="search-icon"></i>
+                                                    <form id="site-search" method="get" action="/search/">
+                                                        <input type="text" placeholder="Search for anything" class="typeahead input_text clear_search" name="s">
+                                                        <input type="submit" value="Search">
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="login-container ">
+                                    <div class="login-links">
+                                        <a class="launch-signup">Sign up</a>
+                                        <i>/</i>
+                                        <a class="launch-login">Log in</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
             </div>
         </div>
-    </div>
+    </header>
     <div class="container body-content">
         @RenderBody()
         <hr />
@@ -34,8 +83,11 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    <link rel="stylesheet" href="~/Content/filter_multi_select.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <script src="~/Scripts/filter-multi-select-bundle.min.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>
