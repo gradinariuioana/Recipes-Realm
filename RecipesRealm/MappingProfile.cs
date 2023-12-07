@@ -42,7 +42,8 @@ namespace RecipesRealm
 
             CreateMap<RecipeIngredient, IngredientViewModel>()
             .ForMember(nVM => nVM.Ingredient_Name, opt => opt.MapFrom(r => r.Ingredient.Ingredient_Name))
-            .ForMember(nVM => nVM.Category, opt => opt.MapFrom(r => r.Ingredient.Category));
+            .ForMember(nVM => nVM.Category, opt => opt.MapFrom(r => r.Ingredient.Category))
+            .ForMember(nVM => nVM.IsOptional, opt => opt.MapFrom(r => r.IsOptional ?? false));
             CreateMap<IngredientViewModel, RecipeIngredient>();
 
             CreateMap<RecipeNutritionElement, NutritionElementViewModel>()
@@ -55,7 +56,8 @@ namespace RecipesRealm
                 .ForMember(cVM => cVM.Category_Description, opt => opt.MapFrom(c => c.Category.Category_Description));
             CreateMap<CategoryViewModel, RecipeCategory>();
 
-            CreateMap<RecipeStep, RecipeStepViewModel>();
+            CreateMap<RecipeStep, RecipeStepViewModel>()
+                .ForMember(cVM => cVM.IsOptional, opt => opt.MapFrom(c => c.IsOptional ?? false));
             CreateMap<RecipeStepViewModel, RecipeStep>();
         }
         public class RecipeTagConverter : IValueResolver<Recipe, RecipeViewModel, ICollection<TagViewModel>>

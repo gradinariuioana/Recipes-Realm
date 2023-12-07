@@ -44,6 +44,8 @@ namespace RecipesRealm.ViewModels {
 
         [DisplayName("Categories")]
         public ICollection<long> RecipeCategoriesIds { get; set; }
+
+        [DisplayName("Tags")]
         public ICollection<long> RecipeTagsIds { get; set; }
         public ICollection<long> RecipeIngredientsIds { get; set; }
         public ICollection<long> RecipeNutritionElementsIds { get; set; }

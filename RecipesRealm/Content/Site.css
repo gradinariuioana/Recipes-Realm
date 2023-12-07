@@ -810,6 +810,12 @@ header#main-header .login-container .login-links span {
 	width: fit-content !important;
 }
 
+.edit-recipe .tags-wrapper svg {
+	margin-right: 5px;
+	width: 15px;
+	height: 15px;
+}
+
 #recipe-single .single-recipe-details .recipe-detail .right-col {
 	padding-left: 8px;
 }
@@ -873,3 +879,4 @@ header#main-header .login-container .login-links span {
 	color: #337179;
 	font-weight: 500;
 }
+

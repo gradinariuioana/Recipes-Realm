@@ -29,7 +29,7 @@ else {
                                             {
                                                 <li>
                                                     @Html.DisplayFor(modelItem => ingred.Quantity) @Html.DisplayFor(modelItem => ingred.Measurement_Unit) @Html.DisplayFor(modelItem => ingred.Other_Info) @Html.DisplayFor(modelItem => ingred.Ingredient_Name)
-                                                    @if (ingred.IsOptional.HasValue && ingred.IsOptional == true)
+                                                    @if (ingred.IsOptional == true)
                                                     {
                                                         <span>(Optional)</span>
                                                     }
@@ -179,7 +179,7 @@ else {
                                                             <span class="number">@Html.DisplayFor(modelItem => step.Step_Number). </span>
                                                         }
                                                         @Html.DisplayFor(modelItem => step.Step_Title)
-                                                        @if (step.IsOptional.HasValue && step.IsOptional == true)
+                                                        @if (step.IsOptional == true)
                                                         {
                                                             <span class="optional">(Optional)</span>
                                                         }
