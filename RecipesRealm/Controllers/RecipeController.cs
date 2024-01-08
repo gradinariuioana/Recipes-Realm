@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using DataAccess;
 
 namespace RecipesRealm.Controllers
 {
@@ -14,7 +15,7 @@ namespace RecipesRealm.Controllers
         public ActionResult Index()
         {
             IEnumerable<RecipeViewModel> recipeViewModels = new List<RecipeViewModel>();
-            IEnumerable<Recipe> recipes = DataAccess.RecipeAccessor.GetRecipesList();
+            IEnumerable<Recipe> recipes = RecipeAccessor.GetRecipesList();
 
             foreach (Recipe r in recipes)
                 recipeViewModels = recipeViewModels.Append(AutoMapperConfig.Mapper.Map<RecipeViewModel>(r));
@@ -30,28 +31,28 @@ namespace RecipesRealm.Controllers
 
             //all categories
             ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
-            var allCategs = DataAccess.CategoryAccessor.GetCategoriesList();
+            var allCategs = CategoryAccessor.GetCategoriesList();
             foreach (var categ in allCategs)
                 recipeAllCategories.Add(AutoMapperConfig.Mapper.Map<CategoryViewModel>(categ));
             recipeViewModel.AllCategories = recipeAllCategories;
 
             //all tags
             ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
-            var allTags = DataAccess.TagAccessor.GetTagsList();
+            var allTags = TagAccessor.GetTagsList();
             foreach (var tag in allTags)
                 recipeAllTags.Add(AutoMapperConfig.Mapper.Map<TagViewModel>(tag));
             recipeViewModel.AllTags = recipeAllTags;
 
             //all nutrition elements
             ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>();
-            var allNElems = DataAccess.NutritionElementAccessor.GetNutritionElementsList();
+            var allNElems = NutritionElementAccessor.GetNutritionElementsList();
             foreach (var nElem in allNElems)
                 recipeAllNutritionElements.Add(AutoMapperConfig.Mapper.Map<NutritionElementViewModel>(nElem));
             recipeViewModel.AllNutritionElements = recipeAllNutritionElements;
 
             //all ingredients
             ICollection<IngredientViewModel> recipeAllIngredients = new List<IngredientViewModel>();
-            var allIngreds = DataAccess.IngredientAccessor.GetIngredientsList();
+            var allIngreds = IngredientAccessor.GetIngredientsList();
             foreach (var ingred in allIngreds)
                 recipeAllIngredients.Add(AutoMapperConfig.Mapper.Map<IngredientViewModel>(ingred));
             recipeViewModel.AllIngredients = recipeAllIngredients;
@@ -74,14 +75,14 @@ namespace RecipesRealm.Controllers
                         Creation_Date = DateTime.Now,
                         Servings = model.Servings,
                         Picture_Path = model.Picture_Path,
-                        Author_User_ID = DataAccess.UserAccessor.GetUserIdByName(model.Author_Name)
+                        Author_User_ID = UserAccessor.GetUserIdByName(model.Author_Name)
                     };
 
-                    var rId = DataAccess.RecipeAccessor.AddRecipe(recipe);
+                    var rId = RecipeAccessor.AddRecipe(recipe);
 
                     //add Ingredients
                     foreach(var ing in model.RecipeIngredients) {
-                        var ingredientExists = DataAccess.IngredientAccessor.CheckIngredientExists(ing.Ingredient_ID);
+                        var ingredientExists = IngredientAccessor.CheckIngredientExists(ing.Ingredient_ID);
                         long ingId;
 
                         if (ingredientExists) {                           
@@ -92,7 +93,7 @@ namespace RecipesRealm.Controllers
                                 Ingredient_Name = ing.Ingredient_Name
                             };
 
-                            ingId = DataAccess.IngredientAccessor.AddIngredient(newIng);
+                            ingId = IngredientAccessor.AddIngredient(newIng);
                         }
 
                         var recipeIng = new RecipeIngredient {
@@ -104,7 +105,7 @@ namespace RecipesRealm.Controllers
                             IsOptional = ing.IsOptional
                         };
 
-                        DataAccess.RecipeIngredientAccessor.AddRecipeIngredient(recipeIng);
+                        RecipeIngredientAccessor.AddRecipeIngredient(recipeIng);
                     }
 
                     //add Steps
@@ -119,12 +120,12 @@ namespace RecipesRealm.Controllers
                             IsOptional = step.IsOptional
                         };
 
-                        DataAccess.RecipeStepAccessor.AddRecipeStep(recipeStep);
+                        RecipeStepAccessor.AddRecipeStep(recipeStep);
                     }
 
                     //add Tags
                     foreach (var tag in model.RecipeTags) {
-                        var tagExists = DataAccess.TagAccessor.CheckTagExists(tag.Tag_Name);
+                        var tagExists = TagAccessor.CheckTagExists(tag.Tag_Name);
                         long tagId;
 
                         if (tagExists) {
@@ -135,7 +136,7 @@ namespace RecipesRealm.Controllers
                                 Tag_Name = tag.Tag_Name
                             };
 
-                            tagId = DataAccess.TagAccessor.AddTag(newTag);
+                            tagId = TagAccessor.AddTag(newTag);
                         }
 
                         var recipeTag = new RecipeTag {
@@ -143,7 +144,7 @@ namespace RecipesRealm.Controllers
                             Tag_ID = tagId
                         };
 
-                        DataAccess.RecipeTagAccessor.AddRecipeTag(recipeTag);
+                        RecipeTagAccessor.AddRecipeTag(recipeTag);
                     }
 
                     //add Categories
@@ -155,7 +156,7 @@ namespace RecipesRealm.Controllers
                             Category_ID = categoryId
                         };
 
-                        DataAccess.RecipeCategoryAccessor.AddRecipeCategory(recipeCategory);
+                        RecipeCategoryAccessor.AddRecipeCategory(recipeCategory);
                     }
 
                     //add Nutrition Elements
@@ -170,7 +171,7 @@ namespace RecipesRealm.Controllers
                             Value = nutritionElem.Value                            
                         };
 
-                        DataAccess.RecipeNutritionElementAccessor.AddRecipeNutritionElement(recipeNE);
+                        RecipeNutritionElementAccessor.AddRecipeNutritionElement(recipeNE);
                     }
 
                     return RedirectToAction("Details", new { id = rId });
@@ -194,7 +195,7 @@ namespace RecipesRealm.Controllers
         {
             try
             {
-                var recipe = DataAccess.RecipeAccessor.GetRecipe(id);
+                var recipe = RecipeAccessor.GetRecipe(id);
                 RecipeViewModel recipeViewModel = new RecipeViewModel();
 
                 if (recipe == null)
@@ -223,7 +224,7 @@ namespace RecipesRealm.Controllers
         public ActionResult Edit(long id)
         {
             try {
-                var recipe = DataAccess.RecipeAccessor.GetRecipe(id);
+                var recipe = RecipeAccessor.GetRecipe(id);
                 RecipeViewModel recipeViewModel = new RecipeViewModel();
 
                 if (recipe == null)
@@ -236,28 +237,28 @@ namespace RecipesRealm.Controllers
 
                 //all categories
                 ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
-                var allCategs = DataAccess.CategoryAccessor.GetCategoriesList();
+                var allCategs = CategoryAccessor.GetCategoriesList();
                 foreach(var categ in allCategs)
                     recipeAllCategories.Add(AutoMapperConfig.Mapper.Map<CategoryViewModel>(categ));
                 recipeViewModel.AllCategories = recipeAllCategories;
 
                 //all tags
                 ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
-                var allTags = DataAccess.TagAccessor.GetTagsList();
+                var allTags = TagAccessor.GetTagsList();
                 foreach (var tag in allTags)
                     recipeAllTags.Add(AutoMapperConfig.Mapper.Map<TagViewModel>(tag));
                 recipeViewModel.AllTags = recipeAllTags;
 
                 //all nutrition elements
                 ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>(); 
-                var allNElems = DataAccess.NutritionElementAccessor.GetNutritionElementsList();
+                var allNElems = NutritionElementAccessor.GetNutritionElementsList();
                 foreach (var nElem in allNElems)
                     recipeAllNutritionElements.Add(AutoMapperConfig.Mapper.Map<NutritionElementViewModel>(nElem));
                 recipeViewModel.AllNutritionElements = recipeAllNutritionElements;
 
                 //all ingredients
                 ICollection<IngredientViewModel> recipeAllIngredients = new List<IngredientViewModel>();
-                var allIngreds = DataAccess.IngredientAccessor.GetIngredientsList();
+                var allIngreds = IngredientAccessor.GetIngredientsList();
                 foreach (var ingred in allIngreds)
                     recipeAllIngredients.Add(AutoMapperConfig.Mapper.Map<IngredientViewModel>(ingred));
                 recipeViewModel.AllIngredients = recipeAllIngredients;
@@ -280,7 +281,7 @@ namespace RecipesRealm.Controllers
                if (ModelState.IsValid)
                {
 
-                   var tagExistsInDB = DataAccess.TagAccessor.CheckTagExists(model.Tag_Name);
+                   var tagExistsInDB = TagAccessor.CheckTagExists(model.Tag_Name);
 
                    if (tagExistsInDB)
                    {
@@ -294,7 +295,7 @@ namespace RecipesRealm.Controllers
                        Tag_ID = id
                    };
 
-                   DataAccess.TagAccessor.EditTag(newTag);
+                   TagAccessor.EditTag(newTag);
 
                    return RedirectToAction("Details", new { id = id });
                }
@@ -319,7 +320,7 @@ namespace RecipesRealm.Controllers
        {
             try
             {
-                var recipe = DataAccess.RecipeAccessor.GetRecipe(id);
+                var recipe = RecipeAccessor.GetRecipe(id);
                 RecipeViewModel recipeViewModel = new RecipeViewModel();
 
                 if (recipe == null)
@@ -345,13 +346,13 @@ namespace RecipesRealm.Controllers
        {
            try
            {
-                DataAccess.RecipeTagAccessor.DeleteAllTagsForRecipe(model.Recipe_ID);
-                DataAccess.RecipeStepAccessor.DeleteAllStepsForRecipe(model.Recipe_ID);
-                DataAccess.RecipeNutritionElementAccessor.DeleteAllNutritionElementsForRecipe(model.Recipe_ID);
-                DataAccess.RecipeCategoryAccessor.DeleteAllCategoriesForRecipe(model.Recipe_ID);
-                DataAccess.RecipeIngredientAccessor.DeleteAllIngredientsForRecipe(model.Recipe_ID);
+                RecipeTagAccessor.DeleteAllTagsForRecipe(model.Recipe_ID);
+                RecipeStepAccessor.DeleteAllStepsForRecipe(model.Recipe_ID);
+                RecipeNutritionElementAccessor.DeleteAllNutritionElementsForRecipe(model.Recipe_ID);
+                RecipeCategoryAccessor.DeleteAllCategoriesForRecipe(model.Recipe_ID);
+                RecipeIngredientAccessor.DeleteAllIngredientsForRecipe(model.Recipe_ID);
 
-                DataAccess.RecipeAccessor.DeleteRecipe(model.Recipe_ID);
+                RecipeAccessor.DeleteRecipe(model.Recipe_ID);
 
                 return RedirectToAction("Index");
            }

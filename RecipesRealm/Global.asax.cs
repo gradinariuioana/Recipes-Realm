@@ -2,6 +2,7 @@
 using System.Web.Optimization;
 using System.Web.Routing;
 using AutoMapper;
+using RecipesRealm.Infrastructure;
 
 namespace RecipesRealm
 {
@@ -15,6 +16,7 @@ namespace RecipesRealm
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             AutoMapperConfig.Initialize();
+            ContainerConfigurer.ConfigureContainer();
         }
     }
 }

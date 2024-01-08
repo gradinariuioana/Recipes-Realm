@@ -45,6 +45,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.3.1.0\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.WebApi, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.WebApi.3.1.0\lib\net40\Autofac.Integration.WebApi.dll</HintPath>
+    </Reference>
     <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.10.1.1\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
@@ -157,6 +163,9 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json.Bson, Version=1.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.Bson.1.0.2\lib\net45\Newtonsoft.Json.Bson.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -174,6 +183,9 @@
     </Reference>
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.6.0.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -208,6 +220,12 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.3.0\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.3.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.3.0\lib\net45\System.Web.Mvc.dll</HintPath>
@@ -258,6 +276,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ContainerConfigurer.cs" />
     <Compile Include="MappingProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />
@@ -433,9 +452,17 @@
     <Content Include="Scripts\jquery-3.7.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BusinessLayer\BusinessLayer.csproj">
+      <Project>{0C62DF47-BC37-4660-82DF-ABD9BFEB02FA}</Project>
+      <Name>BusinessLayer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj">
       <Project>{ca5ccf01-049b-42b9-9a26-1e9f6e4b83fd}</Project>
       <Name>DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DatabaseRepository\DatabaseRepository.csproj">
+      <Project>{57EA6290-071F-4C2F-B545-4323C3C85726}</Project>
+      <Name>DatabaseRepository</Name>
     </ProjectReference>
     <ProjectReference Include="..\ModelsLibrary\ModelsLibrary.csproj">
       <Project>{1703872e-ab6e-4c87-a3fa-0f8229201820}</Project>

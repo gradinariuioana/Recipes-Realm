@@ -12,12 +12,12 @@ namespace DataAccess
     {
         public static IEnumerable<Recipe> GetRecipesList() {
             using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var recipes = context.Recipes.Include(r => r.RecipeIngredients).Include("RecipeIngredients.Ingredient")
+                var recipes = context.Recipes.Include("RecipeIngredients.Ingredient")
                     .Include(r => r.RecipeSteps)
-                    .Include(r => r.RecipeCategories).Include("RecipeCategories.Category")
-                    .Include(r => r.RecipeTags).Include("RecipeTags.Tag")
+                    .Include("RecipeCategories.Category")
+                    .Include("RecipeTags.Tag")
                     .Include(r => r.User)
-                    .Include(r => r.RecipeNutritionElements).Include("RecipeNutritionElements.NutritionElement")
+                    .Include("RecipeNutritionElements.NutritionElement")
                     .ToList();
                 return recipes;
             }
@@ -25,12 +25,12 @@ namespace DataAccess
 
         public static Recipe GetRecipe(long id) {
             using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var recipe = context.Recipes.Include(r => r.RecipeIngredients).Include("RecipeIngredients.Ingredient")
+                var recipe = context.Recipes.Include("RecipeIngredients.Ingredient")
                     .Include(r => r.RecipeSteps)
-                    .Include(r => r.RecipeCategories).Include("RecipeCategories.Category")
-                    .Include(r => r.RecipeTags).Include("RecipeTags.Tag")
+                    .Include("RecipeCategories.Category")
+                    .Include("RecipeTags.Tag")
                     .Include(r => r.User)
-                    .Include(r => r.RecipeNutritionElements).Include("RecipeNutritionElements.NutritionElement")
+                    .Include("RecipeNutritionElements.NutritionElement")
                     .FirstOrDefault(r => r.Recipe_ID == id);
                 return recipe;
             }

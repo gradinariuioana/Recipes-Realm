@@ -4,7 +4,7 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace DatabaseRepository
 {
-    public partial class RecipesRealmContext : DbContext
+    public partial class RecipesRealmContext : DbContext, IRecipesRealmContext
     {
         public RecipesRealmContext() : base("RecipesRealmDBConnectionString")
         {
@@ -33,5 +33,10 @@ namespace DatabaseRepository
         public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<SavedRecipe> SavedRecipes { get; set; }
+    }
+
+    public interface IRecipesRealmContext
+    {
+
     }
 }
