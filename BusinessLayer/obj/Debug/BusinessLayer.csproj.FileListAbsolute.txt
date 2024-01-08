@@ -1,0 +1,2 @@
+D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\BusinessLayer\obj\Debug\BusinessLayer.csproj.AssemblyReference.cache
+D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\BusinessLayer\obj\Debug\BusinessLayer.csproj.CoreCompileInputs.cache
