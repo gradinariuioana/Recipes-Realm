@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ModelsLibrary
 {
+    [Serializable]
     public class Recipe
     {
         [Key]
@@ -26,6 +27,8 @@ namespace ModelsLibrary
 
         [Required]
         public long Author_User_ID { get; set; }
+
+        public bool? Is_Active { get; set; }
 
     
         [ForeignKey("Author_User_ID")]

@@ -4,6 +4,7 @@
     <h1>@ViewBag.Warning</h1>
 }
 else {
+    @Html.HiddenFor(model => model.Author_User_ID)
     <section id="recipe-single">
         <div class="container recipe-container">
             <div class="row recipe-header">
@@ -25,12 +26,10 @@ else {
                                 <div class="row">
                                     <div class="col-12 ingredient-wrapper">
                                         <ul class="ingred-list">
-                                            @foreach (var ingred in Model.RecipeIngredients)
-                                            {
+                                            @foreach (var ingred in Model.RecipeIngredients) {
                                                 <li>
                                                     @Html.DisplayFor(modelItem => ingred.Quantity) @Html.DisplayFor(modelItem => ingred.Measurement_Unit) @Html.DisplayFor(modelItem => ingred.Other_Info) @Html.DisplayFor(modelItem => ingred.Ingredient_Name)
-                                                    @if (ingred.IsOptional == true)
-                                                    {
+                                                    @if (ingred.IsOptional == true) {
                                                         <span>(Optional)</span>
                                                     }
                                                 </li>
@@ -40,22 +39,23 @@ else {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-7 single-recipe-details">
+                        <div class="col-7 single-recipe-details position-relative">
                             <h1>@Html.DisplayFor(model => model.Recipe_Name)</h1>
+                            <div class="recipe-user-control-btns d-none position-absolute">
+                                @Html.ActionLink("Edit Recipe", "Edit", "Recipe", new { id = Model.Recipe_ID }, new { @class = "btn btn-info d-block mb-2" })
+                                @Html.ActionLink("Remove Recipe", "Delete", "Recipe", new { id = Model.Recipe_ID }, new { @class = "btn btn-danger d-block" })
+                            </div>
                             <div class="row">
                                 <div class="col-12 average-rating">
                                     <div class="star-rating">
                                         <div class="star-input">
                                             @{
                                                 var rating = Model.AverageRating;
-                                                for (var i = 5; i > 0; i--)
-                                                {
-                                                    if (i < rating)
-                                                    {
+                                                for (var i = 5; i > 0; i--) {
+                                                    if (i <= rating) {
                                                         <input type="radio" name="rating" id="rating-@i" checked>
                                                     }
-                                                    else
-                                                    {
+                                                    else {
                                                         <input type="radio" name="rating" id="rating-@i">
                                                     }
                                                     <label for="rating-@i" class="fa fa-star"></label>
@@ -64,6 +64,10 @@ else {
                                         </div>
                                         <div class="rating-value">
                                             (@rating/5)
+                                        </div>
+
+                                        <div class="recipe-rating-btn d-none">
+                                            <button type="button" class="btn btn-info" id="rateRecipeBtn">Rate Recipe</button>
                                         </div>
                                     </div>
                                 </div>
@@ -76,8 +80,7 @@ else {
                                 <div class="col-12">
                                     <ul class="categories-wrapper">
                                         @{
-                                            foreach (var cat in Model.RecipeCategories)
-                                            {
+                                            foreach (var cat in Model.RecipeCategories) {
                                                 <li class="single-category">
                                                     <a href="/Category/Details/@Html.DisplayFor(modelItem => cat.Category_ID)">@Html.DisplayFor(modelItem => cat.Category_Name)</a>
                                                 </li>
@@ -118,16 +121,16 @@ else {
                                     <div class="tags-list">
                                         <svg viewbox="0 0 27.2 27.2"><g><path fill="#62A5A1" d="M26.4,1.5c0-0.3-0.3-0.6-0.7-0.7L13.8,0L0.2,13.6c-0.2,0.2-0.2,0.6,0,0.9L12.7,27c0.2,0.2,0.6,0.2,0.9,0l13.6-13.6L26.4,1.5z M13.6,25.3c-0.2,0.2-0.6,0.2-0.9,0L2,14.5c-0.2-0.2-0.3-0.6,0-0.9L14.4,1.2l10,0.9c0.3,0,0.7,0.3,0.7,0.7l0.9,10L13.6,25.3z" /><path fill="#62A5A1" d="M17.3,6.3c-1,1-0.9,2.5,0,3.5s2.6,1,3.5,0c1-1,0.9-2.5,0-3.5C19.9,5.4,18.3,5.4,17.3,6.3z M20,9c-0.5,0.5-1.3,0.5-1.8,0s-0.5-1.3,0-1.8c0.5-0.5,1.3-0.5,1.8,0C20.5,7.7,20.5,8.5,20,9z" /></g></svg>
                                         @{
-                                            var last = Model.RecipeTags.Last();
-                                            foreach (var tag in Model.RecipeTags)
-                                            {
-                                                <div class="single-tag">
-                                                    <a href="/Tag/Details/@Html.DisplayFor(modelItem => tag.Tag_ID)">@Html.DisplayFor(modelItem => tag.Tag_Name)</a>
-                                                    @if (tag != last)
-                                                    {
-                                                        <span>,</span>
-                                                    }
-                                                </div>
+                                            if (Model.RecipeTags.Count > 0) {
+                                                var last = Model.RecipeTags.Last();
+                                                foreach (var tag in Model.RecipeTags) {
+                                                    <div class="single-tag">
+                                                        @Html.DisplayFor(modelItem => tag.Tag_Name)
+                                                        @if (tag != last) {
+                                                            <span>,</span>
+                                                        }
+                                                    </div>
+                                                }
                                             }
                                         }
                                     </div>
@@ -139,8 +142,7 @@ else {
                                     </h6>
                                     <div class="nutrition-expanded">
                                         <ul>
-                                            @foreach (var elem in Model.RecipeNutritionElements)
-                                            {
+                                            @foreach (var elem in Model.RecipeNutritionElements) {
                                                 <li>
                                                     <div class="inner">
                                                         <span class="title top">
@@ -170,17 +172,14 @@ else {
                                     <div class="method-p">
                                         <h2>Method</h2>
                                         <div class="">
-                                            @foreach (var step in Model.RecipeSteps)
-                                            {
+                                            @foreach (var step in Model.RecipeSteps) {
                                                 <div class="step-wrapper">
                                                     <div class="title">
-                                                        @if (step.Step_Number.HasValue)
-                                                        {
+                                                        @if (step.Step_Number.HasValue) {
                                                             <span class="number">@Html.DisplayFor(modelItem => step.Step_Number). </span>
                                                         }
                                                         @Html.DisplayFor(modelItem => step.Step_Title)
-                                                        @if (step.IsOptional == true)
-                                                        {
+                                                        @if (step.IsOptional == true) {
                                                             <span class="optional">(Optional)</span>
                                                         }
                                                     </div>
@@ -200,3 +199,95 @@ else {
         </div>
     </section>
 }
+
+<script>
+    $(document).ready(function () {
+        var userId = $('#Author_User_ID').val();
+
+        if (localStorage.getItem("loggedInUserId") != undefined) {
+            if (userId == localStorage.getItem("loggedInUserId")) {
+                $('.recipe-user-control-btns').removeClass('d-none');
+            }
+            else {
+                checkUserCanRate();
+            }
+        }
+
+        $('#rateRecipeBtn').click(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData();
+
+            var model = {
+                Recipe_ID: '@Model.Recipe_ID',
+                User_ID: '@Model.Author_User_ID',
+                Rating_Value: $('.star-rating input:checked ~ label').length
+            };
+
+            var modelStr = JSON.stringify(model);
+
+            formData.append("modelString", modelStr);
+
+            $.ajax({
+                type: "POST",
+                url: '/Rating/AddRating',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                timeout: 60000,
+                success: function (rating) {
+                    var r = JSON.parse(rating);
+
+                    if (r.ratingId != -1) {
+                        $('.recipe-rating-btn').addClass('fade');
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+
+            });
+
+            return false;
+        })
+
+        function checkUserCanRate() {
+
+            var formData = new FormData();
+
+            var model = {
+                Recipe_ID: '@Model.Recipe_ID',
+                User_ID: '@Model.Author_User_ID'
+            };
+
+            var modelStr = JSON.stringify(model);
+
+            formData.append("modelString", modelStr);
+
+            $.ajax({
+                type: "POST",
+                url: '/Rating/CheckUserCanRateRecipe',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                timeout: 60000,
+                success: function (data) {
+                    var d = JSON.parse(data);
+
+                    //console.log(canRate);
+                    if (d.canRate == true) {
+                        $('.recipe-rating-btn').removeClass('d-none');
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+
+            });
+        }
+    });
+</script>

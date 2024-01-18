@@ -1,75 +1,53 @@
-﻿using ModelsLibrary;
-using System.Collections.Generic;
+﻿using DatabaseRepository;
+using ModelsLibrary;
+using System;
 using System.Linq;
 
-namespace DataAccess
-{
-    public class UserAccessor
-    {
-        public static IEnumerable<User> GetUsersList() {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var users = context.Users.ToList();
-                return users;
-            }
+namespace DataAccess {
+    public class UserAccessor : IUserAccessor {
+
+        public RecipesRealmContext context;
+
+        public UserAccessor(IRecipesRealmContext db) {
+            context = (RecipesRealmContext)db;
         }
 
-        public static long AddUser(User user) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.Users.Add(user);
-                context.SaveChanges();
+        public User AddUser(User user) {
+            user.Registration_Date = DateTime.Now;
 
-                return user.User_ID;
-            }
+            context.Users.Add(user);
+            context.SaveChanges();
+
+            return user;
         }
 
-        public static bool CheckUserNameExists(string userName) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                User user = context.Users.FirstOrDefault(t => t.User_Name.ToLower().Trim() == userName.ToLower().Trim());
+        public bool CheckUserEmailExists(string userEmail) {
+            User user = context.Users.FirstOrDefault(t => t.Email_Address.ToLower().Trim() == userEmail.ToLower().Trim());
 
-                return user != null;
-            }
+            return user != null;
         }
 
-        public static bool CheckUserEmailExists(string userEmail) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                User user = context.Users.FirstOrDefault(t => t.Email_Address.ToLower().Trim() == userEmail.ToLower().Trim());
+        public string GetUserName(long id) {
+            User user = context.Users.FirstOrDefault(t => t.User_ID == id);
 
-                return user != null;
-            }
+            return user.User_Name;
         }
 
-        public static void DeleteUser(User user) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.Users.Remove(user);
-                context.SaveChanges();
-            }
+        public User CheckUserForLogin(User user) {
+            User loggedInUser = context.Users.FirstOrDefault(u => u.Email_Address == user.Email_Address && u.Password == user.Password);
+
+            return loggedInUser;
         }
+    }
 
-        public static void UpdateUser(User user) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                User oldUser = context.Users.FirstOrDefault(r => r.User_ID == user.User_ID);
-                oldUser.User_Name = user.User_Name;
-                oldUser.Profile_Picture_Path = user.Profile_Picture_Path;
-                oldUser.Password = user.Password;
+    public interface IUserAccessor {
 
-                context.SaveChanges();
-            }
-        }
+        User AddUser(User user);
 
-        public static string GetUserName(long id) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                User user = context.Users.FirstOrDefault(t => t.User_ID == id);
+        bool CheckUserEmailExists(string userEmail);
 
-                return user.User_Name;
-            }
-        }
+        string GetUserName(long id);
 
-        public static long GetUserIdByName(string userName) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                User user = context.Users.FirstOrDefault(t => t.User_Name.ToLower().Trim() == userName.ToLower().Trim());
-
-                return user.User_ID;
-            }
-        }
+        User CheckUserForLogin(User user);
     }
 }

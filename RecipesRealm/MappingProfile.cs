@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using ModelsLibrary;
 using RecipesRealm.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace RecipesRealm
 {
@@ -10,12 +13,6 @@ namespace RecipesRealm
         public MappingProfile()
         {
             CreateMap<Recipe, RecipeViewModel>()
-                .ForMember(rVM => rVM.Author_Name, opt => opt.MapFrom(r => DataAccess.UserAccessor.GetUserName(r.Author_User_ID)))
-                .ForMember(rVM => rVM.AverageRating, opt => opt.MapFrom(r => DataAccess.RatingAccessor.GetAverageRatingForRecipe(r.Recipe_ID)))
-                .ForMember(rVM => rVM.RecipeCategoriesIds, opt => opt.MapFrom(r => DataAccess.RecipeCategoryAccessor.GetCategoriesIdsForRecipe(r.Recipe_ID)))
-                .ForMember(rVM => rVM.RecipeTagsIds, opt => opt.MapFrom(r => DataAccess.RecipeTagAccessor.GetTagsIdsForRecipe(r.Recipe_ID)))
-                .ForMember(rVM => rVM.RecipeIngredientsIds, opt => opt.MapFrom(r => DataAccess.RecipeIngredientAccessor.GetIngredientsIdsForRecipe(r.Recipe_ID)))
-                .ForMember(rVM => rVM.RecipeNutritionElementsIds, opt => opt.MapFrom(r => DataAccess.RecipeNutritionElementAccessor.GetNutritionElementsIdsForRecipe(r.Recipe_ID)))
                 .ForMember(rVM => rVM.RecipeSteps, opt => opt.MapFrom<RecipeStepConverter>())
                 .ForMember(rVM => rVM.RecipeCategories, opt => opt.MapFrom<RecipeCategoryConverter>())
                 .ForMember(rVM => rVM.RecipeIngredients, opt => opt.MapFrom<RecipeIngredientConverter>())
@@ -30,8 +27,10 @@ namespace RecipesRealm
             CreateMap<Ingredient, IngredientViewModel>();
             CreateMap<IngredientViewModel, Ingredient>();
 
-            CreateMap<NutritionElement, NutritionElementViewModel>();
-            CreateMap<NutritionElementViewModel, NutritionElement>();
+            CreateMap<NutritionElement, NutritionElementViewModel>()
+                 .ForMember(nVM => nVM.NutritionElement_ID, opt => opt.MapFrom(r => r.ID));
+            CreateMap<NutritionElementViewModel, NutritionElement>()
+                .ForMember(nVM => nVM.ID, opt => opt.MapFrom(r => r.NutritionElement_ID));
 
             CreateMap<Category, CategoryViewModel>();
             CreateMap<CategoryViewModel, Category>();
@@ -59,6 +58,11 @@ namespace RecipesRealm
             CreateMap<RecipeStep, RecipeStepViewModel>()
                 .ForMember(cVM => cVM.IsOptional, opt => opt.MapFrom(c => c.IsOptional ?? false));
             CreateMap<RecipeStepViewModel, RecipeStep>();
+
+            CreateMap<UserViewModel, User>()
+                .ForMember(uVM => uVM.Password, opt => opt.MapFrom<PasswordConverter>());
+
+            CreateMap<RatingViewModel, Rating>();
         }
         public class RecipeTagConverter : IValueResolver<Recipe, RecipeViewModel, ICollection<TagViewModel>>
         {
@@ -139,6 +143,20 @@ namespace RecipesRealm
                 return cVMs;
             }
         }
+
+        public class PasswordConverter : IValueResolver<UserViewModel, User, byte[]> {
+            public byte[] Resolve(UserViewModel source, User dest, byte[] destMember, ResolutionContext context) {
+                string passString = source.Password;
+
+                using (SHA256 sha256Hash = SHA256.Create()) {
+                    // ComputeHash - returns byte array
+                    byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(passString));
+
+                    return bytes;
+                }
+            }
+        }
+
     }
 
     public static class AutoMapperConfig

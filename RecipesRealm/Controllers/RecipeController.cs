@@ -1,188 +1,132 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using ModelsLibrary;
 using RecipesRealm.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using DataAccess;
+using BusinessLayer.Interfaces;
 
-namespace RecipesRealm.Controllers
-{
-    public class RecipeController : BaseController { 
+namespace RecipesRealm.Controllers {
+    public class RecipeController : BaseController {
 
-        public ActionResult Index()
-        {
-            IEnumerable<RecipeViewModel> recipeViewModels = new List<RecipeViewModel>();
-            IEnumerable<Recipe> recipes = RecipeAccessor.GetRecipesList();
+        public RecipeController(IRecipeRecommendationEngine recipeRecommendationEngine) : base(recipeRecommendationEngine) {
+        }
 
-            foreach (Recipe r in recipes)
-                recipeViewModels = recipeViewModels.Append(AutoMapperConfig.Mapper.Map<RecipeViewModel>(r));
+        public ActionResult Index() {
+            try {
+                IEnumerable<RecipeViewModel> recipeViewModels = new List<RecipeViewModel>();
+                IEnumerable<Recipe> recipes = recipeRecommendationEngine.GetRecipesList();
 
-            return View(recipeViewModels);
+                if (recipes is null) {
+                    logger.Error("Recipes could not be retrieved");
+                }
+
+                foreach (Recipe r in recipes)
+                    recipeViewModels = recipeViewModels.Append(AutoMapperConfig.Mapper.Map<RecipeViewModel>(r));
+
+                return View(recipeViewModels);
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Getting Recipes");
+                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+            }
         }
 
         #region Create
 
-        public ActionResult Create()
-        {
-            var recipeViewModel = new RecipeViewModel();
+        public ActionResult Create() {
+            try {
+                RecipeViewModel recipeViewModel = new RecipeViewModel();
 
-            //all categories
-            ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
-            var allCategs = CategoryAccessor.GetCategoriesList();
-            foreach (var categ in allCategs)
-                recipeAllCategories.Add(AutoMapperConfig.Mapper.Map<CategoryViewModel>(categ));
-            recipeViewModel.AllCategories = recipeAllCategories;
+                //all categories
+                ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
+                var allCategs = recipeRecommendationEngine.GetCategoriesList();
 
-            //all tags
-            ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
-            var allTags = TagAccessor.GetTagsList();
-            foreach (var tag in allTags)
-                recipeAllTags.Add(AutoMapperConfig.Mapper.Map<TagViewModel>(tag));
-            recipeViewModel.AllTags = recipeAllTags;
+                foreach (var categ in allCategs)
+                    recipeAllCategories.Add(AutoMapperConfig.Mapper.Map<CategoryViewModel>(categ));
 
-            //all nutrition elements
-            ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>();
-            var allNElems = NutritionElementAccessor.GetNutritionElementsList();
-            foreach (var nElem in allNElems)
-                recipeAllNutritionElements.Add(AutoMapperConfig.Mapper.Map<NutritionElementViewModel>(nElem));
-            recipeViewModel.AllNutritionElements = recipeAllNutritionElements;
+                recipeViewModel.AllCategories = recipeAllCategories;
 
-            //all ingredients
-            ICollection<IngredientViewModel> recipeAllIngredients = new List<IngredientViewModel>();
-            var allIngreds = IngredientAccessor.GetIngredientsList();
-            foreach (var ingred in allIngreds)
-                recipeAllIngredients.Add(AutoMapperConfig.Mapper.Map<IngredientViewModel>(ingred));
-            recipeViewModel.AllIngredients = recipeAllIngredients;
+                //all tags
+                ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
+                var allTags = recipeRecommendationEngine.GetTagsList();
 
-            return View(recipeViewModel);
+                foreach (var tag in allTags)
+                    recipeAllTags.Add(AutoMapperConfig.Mapper.Map<TagViewModel>(tag));
+
+                recipeViewModel.AllTags = recipeAllTags;
+
+                //all nutrition elements
+                ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>();
+                var allNElems = recipeRecommendationEngine.GetNutritionElementsList();
+
+                foreach (var nElem in allNElems)
+                    recipeAllNutritionElements.Add(AutoMapperConfig.Mapper.Map<NutritionElementViewModel>(nElem));
+
+                recipeViewModel.AllNutritionElements = recipeAllNutritionElements;
+
+                //all ingredients
+                ICollection<IngredientViewModel> recipeAllIngredients = new List<IngredientViewModel>();
+                var allIngreds = recipeRecommendationEngine.GetIngredientsList();
+
+                foreach (var ingred in allIngreds)
+                    recipeAllIngredients.Add(AutoMapperConfig.Mapper.Map<IngredientViewModel>(ingred));
+
+                recipeViewModel.AllIngredients = recipeAllIngredients;
+
+                return View(recipeViewModel);
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Getting Recipe Model for Creation");
+                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+            }
         }
 
         [HttpPost]
-        public ActionResult Create(RecipeViewModel model)
-        {
-            try
-            {
+        public ActionResult Create(RecipeViewModel model) {
+            try {
                 if (ModelState.IsValid) {
+                    Recipe recipe = AutoMapperConfig.Mapper.Map<Recipe>(model);
 
-                    Recipe recipe = new Recipe {
-                        Recipe_Name = model.Recipe_Name,
-                        Recipe_Description = model.Recipe_Description,
-                        Cooking_Time = model.Cooking_Time,
-                        Difficulty_Level = model.Difficulty_Level,
-                        Creation_Date = DateTime.Now,
-                        Servings = model.Servings,
-                        Picture_Path = model.Picture_Path,
-                        Author_User_ID = UserAccessor.GetUserIdByName(model.Author_Name)
-                    };
+                    recipe.Creation_Date = DateTime.Now;
 
-                    var rId = RecipeAccessor.AddRecipe(recipe);
+                    ICollection<RecipeTag> recipeTags = new List<RecipeTag>();
 
-                    //add Ingredients
-                    foreach(var ing in model.RecipeIngredients) {
-                        var ingredientExists = IngredientAccessor.CheckIngredientExists(ing.Ingredient_ID);
-                        long ingId;
-
-                        if (ingredientExists) {                           
-                            ingId = ing.Ingredient_ID;
-                        }
-                        else {
-                            var newIng = new Ingredient {
-                                Ingredient_Name = ing.Ingredient_Name
-                            };
-
-                            ingId = IngredientAccessor.AddIngredient(newIng);
-                        }
-
-                        var recipeIng = new RecipeIngredient {
-                            Recipe_ID = rId,
-                            Ingredient_ID = ingId,
-                            Other_Info = ing.Other_Info,
-                            Measurement_Unit = ing.Measurement_Unit,
-                            Quantity = ing.Quantity,
-                            IsOptional = ing.IsOptional
-                        };
-
-                        RecipeIngredientAccessor.AddRecipeIngredient(recipeIng);
-                    }
-
-                    //add Steps
-                    foreach (var step in model.RecipeSteps) {                     
-
-                        var recipeStep = new RecipeStep {
-                            Recipe_ID = rId,
-                            Step_Description = step.Step_Description,
-                            Step_Number = step.Step_Number,
-                            Step_Title = step.Step_Title,
-                            Picture_Path = step.Picture_Path,
-                            IsOptional = step.IsOptional
-                        };
-
-                        RecipeStepAccessor.AddRecipeStep(recipeStep);
-                    }
-
-                    //add Tags
-                    foreach (var tag in model.RecipeTags) {
-                        var tagExists = TagAccessor.CheckTagExists(tag.Tag_Name);
-                        long tagId;
-
-                        if (tagExists) {
-                            tagId = tag.Tag_ID;
-                        }
-                        else {
-                            var newTag = new Tag {
-                                Tag_Name = tag.Tag_Name
-                            };
-
-                            tagId = TagAccessor.AddTag(newTag);
-                        }
-
+                    foreach (var tagId in model.RecipeTagsIds) {
                         var recipeTag = new RecipeTag {
-                            Recipe_ID = rId,
+                            Recipe_ID = 0,
                             Tag_ID = tagId
                         };
 
-                        RecipeTagAccessor.AddRecipeTag(recipeTag);
+                        recipeTags.Add(recipeTag);
                     }
 
-                    //add Categories
-                    foreach (var category in model.RecipeCategories) {
-                        long categoryId = category.Category_ID;
-                        
-                        var recipeCategory = new RecipeCategory {
-                            Recipe_ID = rId,
-                            Category_ID = categoryId
+                    recipe.RecipeTags = recipeTags;
+
+                    ICollection<RecipeCategory> recipeCategories = new List<RecipeCategory>();
+
+                    foreach (var catId in model.RecipeCategoriesIds) {
+                        var recipeCateg = new RecipeCategory {
+                            Recipe_ID = 0,
+                            Category_ID = catId
                         };
 
-                        RecipeCategoryAccessor.AddRecipeCategory(recipeCategory);
+                        recipeCategories.Add(recipeCateg);
                     }
 
-                    //add Nutrition Elements
+                    recipe.RecipeCategories = recipeCategories;
 
-                    foreach (var nutritionElem in model.RecipeNutritionElements) {
-                        long nutritionElemId = nutritionElem.ID;
+                    var id = recipeRecommendationEngine.AddRecipe(recipe);
 
-                        var recipeNE = new RecipeNutritionElement {
-                            Recipe_ID = rId,
-                            NutritionElement_ID = nutritionElemId,
-                            Measurement_Unit = nutritionElem.Measurement_Unit,
-                            Value = nutritionElem.Value                            
-                        };
-
-                        RecipeNutritionElementAccessor.AddRecipeNutritionElement(recipeNE);
-                    }
-
-                    return RedirectToAction("Details", new { id = rId });
+                    return RedirectToAction("Details", new { id });
                 }
 
-                ViewBag.Warning = "Could not create Recipe";
-                return View(model);
+                ViewBag.Warning = "Could not Create Recipe";
+                return View();
             }
-            catch (Exception ex)
-            {
-                Utils.WriteToLog("Recipe", "Create", ex.ToString());
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Creating Recipe");
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }
@@ -191,26 +135,26 @@ namespace RecipesRealm.Controllers
 
         #region Details
 
-        public ActionResult Details(long id)
-        {
-            try
-            {
-                var recipe = RecipeAccessor.GetRecipe(id);
+        public ActionResult Details(long id) {
+            try {
+                var recipe = recipeRecommendationEngine.GetRecipe(id);
                 RecipeViewModel recipeViewModel = new RecipeViewModel();
 
-                if (recipe == null)
-                {
+                if (recipe == null) {
                     ViewBag.Warning = "The recipe could not be found";
                     return View(recipeViewModel);
                 }
 
-                recipeViewModel = AutoMapperConfig.Mapper.Map<RecipeViewModel>(recipe);            
+                recipeViewModel = AutoMapperConfig.Mapper.Map<RecipeViewModel>(recipe);
+
+                recipeViewModel.Author_Name = recipeRecommendationEngine.GetUserName(recipe.Author_User_ID);
+                recipeViewModel.AverageRating = recipeRecommendationEngine.GetAverageRatingForRecipe(id);
+
 
                 return View(recipeViewModel);
             }
-            catch (Exception ex)
-            {
-                Utils.WriteToLog("Recipe", "Details", ex.ToString());
+            catch (Exception ex) {
+                logger.Error(ex, "Error on getting Recipe Details");
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
 
@@ -221,44 +165,47 @@ namespace RecipesRealm.Controllers
 
         #region Edit
 
-        public ActionResult Edit(long id)
-        {
+        public ActionResult Edit(long id) {
             try {
-                var recipe = RecipeAccessor.GetRecipe(id);
+                var recipe = recipeRecommendationEngine.GetRecipe(id);
                 RecipeViewModel recipeViewModel = new RecipeViewModel();
 
-                if (recipe == null)
-                {
+                if (recipe == null) {
                     ViewBag.Warning = "The recipe could not be found";
                     return View(recipeViewModel);
                 }
 
                 recipeViewModel = AutoMapperConfig.Mapper.Map<RecipeViewModel>(recipe);
 
+                recipeViewModel.Author_Name = recipeRecommendationEngine.GetUserName(recipe.Author_User_ID);
+                recipeViewModel.AverageRating = recipeRecommendationEngine.GetAverageRatingForRecipe(id);
+                recipeViewModel.RecipeCategoriesIds = recipeRecommendationEngine.GetCategoriesIdsForRecipe(id);
+                recipeViewModel.RecipeTagsIds = recipeRecommendationEngine.GetTagsIdsForRecipe(id);
+
                 //all categories
                 ICollection<CategoryViewModel> recipeAllCategories = new List<CategoryViewModel>();
-                var allCategs = CategoryAccessor.GetCategoriesList();
-                foreach(var categ in allCategs)
+                var allCategs = recipeRecommendationEngine.GetCategoriesList();
+                foreach (var categ in allCategs)
                     recipeAllCategories.Add(AutoMapperConfig.Mapper.Map<CategoryViewModel>(categ));
                 recipeViewModel.AllCategories = recipeAllCategories;
 
                 //all tags
                 ICollection<TagViewModel> recipeAllTags = new List<TagViewModel>();
-                var allTags = TagAccessor.GetTagsList();
+                var allTags = recipeRecommendationEngine.GetTagsList();
                 foreach (var tag in allTags)
                     recipeAllTags.Add(AutoMapperConfig.Mapper.Map<TagViewModel>(tag));
                 recipeViewModel.AllTags = recipeAllTags;
 
                 //all nutrition elements
-                ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>(); 
-                var allNElems = NutritionElementAccessor.GetNutritionElementsList();
+                ICollection<NutritionElementViewModel> recipeAllNutritionElements = new List<NutritionElementViewModel>();
+                var allNElems = recipeRecommendationEngine.GetNutritionElementsList();
                 foreach (var nElem in allNElems)
                     recipeAllNutritionElements.Add(AutoMapperConfig.Mapper.Map<NutritionElementViewModel>(nElem));
                 recipeViewModel.AllNutritionElements = recipeAllNutritionElements;
 
                 //all ingredients
                 ICollection<IngredientViewModel> recipeAllIngredients = new List<IngredientViewModel>();
-                var allIngreds = IngredientAccessor.GetIngredientsList();
+                var allIngreds = recipeRecommendationEngine.GetIngredientsList();
                 foreach (var ingred in allIngreds)
                     recipeAllIngredients.Add(AutoMapperConfig.Mapper.Map<IngredientViewModel>(ingred));
                 recipeViewModel.AllIngredients = recipeAllIngredients;
@@ -266,105 +213,182 @@ namespace RecipesRealm.Controllers
                 return View(recipeViewModel);
             }
             catch (Exception ex) {
-                Utils.WriteToLog("Recipe", "Edit", ex.ToString());
+                logger.Error(ex, "Error on getting Recipe for Edit");
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }
 
-        /*
-       // POST: Tag/Edit/id
-       [HttpPost]
-       public ActionResult Edit(long id, TagViewModel model)
-       {
-           try
-           {
-               if (ModelState.IsValid)
-               {
+        [HttpPost]
+        public ActionResult Edit(long id, RecipeViewModel model) {
+            try {
+                if (ModelState.IsValid) {
+                    model.Recipe_ID = id;
+                    Recipe recipe = AutoMapperConfig.Mapper.Map<Recipe>(model);
+                    recipeRecommendationEngine.UpdateRecipe(recipe);
 
-                   var tagExistsInDB = TagAccessor.CheckTagExists(model.Tag_Name);
 
-                   if (tagExistsInDB)
-                   {
-                       ViewBag.Warning = "There is already a tag with this name in the DataBase";
-                       return View(model);
-                   }
+                    //update tags
+                    var oldTagsIds = recipeRecommendationEngine.GetTagsIdsForRecipe(id);
 
-                   Tag newTag = new Tag
-                   {
-                       Tag_Name = model.Tag_Name,
-                       Tag_ID = id
-                   };
+                    //remove old tags that are not in the model anymore
+                    var recipeTagsToRemove = oldTagsIds.Where(i => !model.RecipeTagsIds.Contains(i));
+                    foreach (var tagId in recipeTagsToRemove) {
+                        recipeRecommendationEngine.DeleteRecipeTag(tagId);
+                    }
 
-                   TagAccessor.EditTag(newTag);
+                    //add new tags that were not in the old model
+                    var tagsToAdd = model.RecipeTagsIds.Where(i => !oldTagsIds.Contains(i));
+                    foreach (var tagId in tagsToAdd) {
+                        var recipeTag = new RecipeTag {
+                            Recipe_ID = id,
+                            Tag_ID = tagId
+                        };
 
-                   return RedirectToAction("Details", new { id = id });
-               }
+                        recipeRecommendationEngine.AddRecipeTag(recipeTag);
+                    }
 
-               ViewBag.Warning = "Could not edit Tag";
-               return View(model);
-           }
-           catch (Exception ex)
-           {
-               Utils.WriteToLog("Tags", "Edit", ex.ToString());
-               return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
-           }
+                    //update categories
+                    var oldCategoriesIds = recipeRecommendationEngine.GetCategoriesIdsForRecipe(id);
 
-       }*/
+                    //remove old categories that are not in the model anymore
+                    var recipeCategoriesToRemove = oldCategoriesIds.Where(i => !model.RecipeCategoriesIds.Contains(i));
+                    foreach (var categoryId in recipeCategoriesToRemove) {
+                        recipeRecommendationEngine.DeleteRecipeCategory(categoryId);
+                    }
 
-       #endregion Edit
+                    //add new categories that were not in the old model
+                    var categoriesToAdd = model.RecipeCategoriesIds.Where(i => !oldCategoriesIds.Contains(i));
+                    foreach (var categoryId in categoriesToAdd) {
+                        var recipeCategory = new RecipeCategory {
+                            Recipe_ID = id,
+                            Category_ID = categoryId
+                        };
 
-       
-       #region Delete
+                        recipeRecommendationEngine.AddRecipeCategory(recipeCategory);
+                    }
 
-       public ActionResult Delete(long id)
-       {
-            try
-            {
-                var recipe = RecipeAccessor.GetRecipe(id);
+                    //update nutritionElements
+                    recipeRecommendationEngine.DeleteAllNutritionElementsForRecipe(id);
+                    foreach (var ne in model.RecipeNutritionElements) {
+                        var recipeNE = new RecipeNutritionElement {
+                            Recipe_ID = id,
+                            NutritionElement_ID = ne.NutritionElement_ID,
+                            Value = ne.Value,
+                            Measurement_Unit = ne.Measurement_Unit
+                        };
+
+                        recipeRecommendationEngine.AddRecipeNutritionElement(recipeNE);
+                    }
+
+
+                    //update ingredients
+                    recipeRecommendationEngine.DeleteAllIngredientsForRecipe(id);
+                    foreach (var ing in model.RecipeIngredients) {
+                        var recipeIng = new RecipeIngredient {
+                            Recipe_ID = id,
+                            Ingredient_ID = ing.Ingredient_ID,
+                            Other_Info = ing.Other_Info,
+                            Measurement_Unit = ing.Measurement_Unit,
+                            Quantity = ing.Quantity.HasValue ? ing.Quantity.Value : 0,
+                            IsOptional = ing.IsOptional
+                        };
+
+                        recipeRecommendationEngine.AddRecipeIngredient(recipeIng);
+                    }
+
+                    //update steps
+                    recipeRecommendationEngine.DeleteAllStepsForRecipe(id);
+                    foreach (var step in model.RecipeSteps) {
+                        var recipeStep = new RecipeStep {
+                            Recipe_ID = id,
+                            Step_Number = step.Step_Number,
+                            Step_Title = step.Step_Title,
+                            Step_Description = step.Step_Description,
+                            IsOptional = step.IsOptional
+                        };
+
+                        recipeRecommendationEngine.AddRecipeStep(recipeStep);
+                    }
+
+                    return RedirectToAction("Edit", new { id });
+                }
+
+                ViewBag.Warning = "Could not Edit Recipe";
+                return View(id);
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Editing Recipe");
+                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+            }
+
+        }
+
+        #endregion Edit
+
+
+        #region Delete
+
+        public ActionResult Delete(long id) {
+            try {
+                var recipe = recipeRecommendationEngine.GetRecipe(id);
                 RecipeViewModel recipeViewModel = new RecipeViewModel();
 
-                if (recipe == null)
-                {
+                if (recipe == null) {
                     ViewBag.Warning = "The recipe could not be found";
                     return View(recipeViewModel);
                 }
 
                 recipeViewModel = AutoMapperConfig.Mapper.Map<RecipeViewModel>(recipe);
 
+                recipeViewModel.Author_Name = recipeRecommendationEngine.GetUserName(recipe.Author_User_ID);
+                recipeViewModel.AverageRating = recipeRecommendationEngine.GetAverageRatingForRecipe(id);
+
                 return View(recipeViewModel);
             }
-            catch (Exception ex)
-            {
-                Utils.WriteToLog("Recipe", "Delete", ex.ToString());
+            catch (Exception ex) {
+                logger.Error(ex, "Error on getting Recipe for Delete");
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }
 
-        
-       [HttpPost]
-       public ActionResult DeleteTag(RecipeViewModel model)
-       {
-           try
-           {
-                RecipeTagAccessor.DeleteAllTagsForRecipe(model.Recipe_ID);
-                RecipeStepAccessor.DeleteAllStepsForRecipe(model.Recipe_ID);
-                RecipeNutritionElementAccessor.DeleteAllNutritionElementsForRecipe(model.Recipe_ID);
-                RecipeCategoryAccessor.DeleteAllCategoriesForRecipe(model.Recipe_ID);
-                RecipeIngredientAccessor.DeleteAllIngredientsForRecipe(model.Recipe_ID);
+        [ActionName("Delete")]
+        [HttpPost]
 
-                RecipeAccessor.DeleteRecipe(model.Recipe_ID);
+        public ActionResult DeleteRecipe(long id) {
+            try {
+                recipeRecommendationEngine.DeleteAllTagsForRecipe(id);
+                recipeRecommendationEngine.DeleteAllStepsForRecipe(id);
+                recipeRecommendationEngine.DeleteAllNutritionElementsForRecipe(id);
+                recipeRecommendationEngine.DeleteAllCategoriesForRecipe(id);
+                recipeRecommendationEngine.DeleteAllIngredientsForRecipe(id);
+
+                recipeRecommendationEngine.DeleteRecipe(id);
 
                 return RedirectToAction("Index");
-           }
-           catch (Exception ex)
-           {
-               Utils.WriteToLog("Recipe", "Delete", ex.ToString());
-               return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
-           }
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Deleting Recipe");
+                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+            }
 
-       }
+        }
 
-       #endregion Delete
- 
+        [HttpPost]
+
+        public ActionResult Deactivate(long id) {
+            try {
+                recipeRecommendationEngine.DeactivateRecipe(id);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Deactivating Recipe");
+                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+            }
+
+        }
+
+        #endregion Delete
+
     }
 }

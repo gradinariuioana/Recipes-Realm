@@ -1,34 +1,46 @@
-﻿using ModelsLibrary;
+﻿using DatabaseRepository;
+using ModelsLibrary;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DataAccess {
-    public class TagAccessor
-    {
-        public static IEnumerable<Tag> GetTagsList()
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var tags = context.Tags.ToList();
-                return tags;
-            }
+    public class TagAccessor : ITagAccessor {
+
+        public RecipesRealmContext context;
+
+        public TagAccessor(IRecipesRealmContext db) {
+            context = (RecipesRealmContext)db;
         }
 
-        public static long AddTag(Tag tag)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.Tags.Add(tag);
-                context.SaveChanges();
-
-                return tag.Tag_ID;
-            }
+        public Tag GetTagById(long id) {
+            var tag = context.Tags.FirstOrDefault(c => c.Tag_ID == id);
+            return tag;
+        }
+        public IEnumerable<Tag> GetTagsList() {
+            var tags = context.Tags.ToList();
+            return tags;
         }
 
-        public static bool CheckTagExists(string TagName) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                Tag tag = context.Tags.FirstOrDefault(t => t.Tag_Name.ToLower().Trim() == TagName.ToLower().Trim());
+        public long AddTag(Tag tag) {
+            context.Tags.Add(tag);
+            context.SaveChanges();
 
-                return tag != null;
-            }
+            return tag.Tag_ID;
         }
+
+        public bool CheckTagExists(string TagName) {
+            Tag tag = context.Tags.FirstOrDefault(t => t.Tag_Name.ToLower().Trim() == TagName.ToLower().Trim());
+
+            return tag != null;
+        }
+    }
+
+    public interface ITagAccessor {
+        Tag GetTagById(long id);
+        IEnumerable<Tag> GetTagsList();
+
+        long AddTag(Tag tag);
+
+        bool CheckTagExists(string TagName);
     }
 }

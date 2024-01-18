@@ -1,61 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.Entity;
 using ModelsLibrary;
+using DatabaseRepository;
 
-namespace DataAccess
-{
-    public class RecipeTagAccessor
-    {
-        public static IEnumerable<Recipe> GetRecipesForTag(long id)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
-                var recipes = context.RecipeTags.Where(r => r.Tag_ID == id).Include(r => r.Recipe).Select(r => r.Recipe).ToList();
-                return recipes;
-            }
+namespace DataAccess {
+    public class RecipeTagAccessor : IRecipeTagAccessor {
+
+        public RecipesRealmContext context;
+
+        public RecipeTagAccessor(IRecipesRealmContext db) {
+            context = (RecipesRealmContext)db;
+        }
+        public IEnumerable<Recipe> GetRecipesForTag(long id) {
+            var recipes = context.RecipeTags.Where(r => r.Tag_ID == id).Include(r => r.Recipe).Select(r => r.Recipe).Where(r => r.Is_Active == true).ToList();
+            return recipes;
         }
 
-        public static IEnumerable<Tag> GetTagsForRecipe(long id) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var tags = context.RecipeTags.Where(r => r.Recipe_ID == id).Include(r => r.Tag).Select(r => r.Tag).ToList();
-                return tags;
-            }
+        public ICollection<long> GetTagsIdsForRecipe(long id) {
+            var tags = context.RecipeTags.Where(r => r.Recipe_ID == id).Select(r => r.Tag_ID).ToList();
+            return tags;
+        }
+        public void AddRecipeTag(RecipeTag recipeTag) {
+            var tags = context.RecipeTags.Add(recipeTag);
+            context.SaveChanges();
         }
 
-        public static ICollection<long> GetTagsIdsForRecipe(long id)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
-                var tags = context.RecipeTags.Where(r => r.Recipe_ID == id).Select(r => r.Tag_ID).ToList();
-                return tags;
-            }
-        }
-        public static void AddRecipeTag(RecipeTag recipeTag) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var tags = context.RecipeTags.Add(recipeTag);
-                context.SaveChanges();
-            }
+        public void DeleteAllTagsForRecipe(long recipeId) {
+            var recipeIngreds = context.RecipeTags.Where(r => r.Recipe_ID == recipeId).ToList();
+
+            context.RecipeTags.RemoveRange(recipeIngreds);
+            context.SaveChanges();
         }
 
-        public static void DeleteAllTagsForRecipe(long recipeId) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var recipeIngreds = context.RecipeTags.Where(r => r.Recipe_ID == recipeId).ToList();
+        public void DeleteRecipeTag(long id) {
+            var recipeTag = context.RecipeTags.FirstOrDefault(r => r.ID == id);
 
-                context.RecipeTags.RemoveRange(recipeIngreds);
-                context.SaveChanges();
-            }
+            if (recipeTag != null) context.RecipeTags.Remove(recipeTag);
+            context.SaveChanges();
         }
 
-        public static void DeleteRecipeTag(RecipeTag recipeTag) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.RecipeTags.Remove(recipeTag);
-                context.SaveChanges();
-            }
-        }
+    }
 
+    public interface IRecipeTagAccessor {
+        IEnumerable<Recipe> GetRecipesForTag(long id);
+
+        ICollection<long> GetTagsIdsForRecipe(long id);
+        void AddRecipeTag(RecipeTag recipeTag);
+
+        void DeleteAllTagsForRecipe(long recipeId);
+
+        void DeleteRecipeTag(long id);
     }
 }

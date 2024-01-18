@@ -1,33 +1,531 @@
 ﻿@model RecipesRealm.ViewModels.RecipeViewModel
 
-@{
-    ViewBag.Title = "Add a Recipe";
+@using (Html.BeginForm("Create", "Recipe", FormMethod.Post)) {
+
+    if (!string.IsNullOrEmpty(ViewBag.Warning)) {
+        <h1>@ViewBag.Warning</h1>
+    }
+    else {
+        @Html.HiddenFor(model => model.Author_User_ID)
+        <section id="recipe-single" class="edit-recipe">
+            <div class="container recipe-container">
+                <div class="row recipe-header">
+                    <div class="col-12">
+                        <div class="row top-section">
+                            <div class="col-5 recipe-header-left">
+                                <div class="hero-wrapper">
+                                    <img src="../../@Html.DisplayFor(model => model.Picture_Path)" alt="@Html.DisplayNameFor(model => model.Picture_Path)">
+                                </div>
+                                <div class="recipe-user-controls">
+                                </div>
+                                <div class="recipe-ingredients">
+                                    <div class="ingredients-heading">
+                                        <h2>Ingredients &nbsp; <span id="recipeIngredientsError" class="error invisible text-danger small">Please add at least one ingredient</span></h2>                                        
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 ingredient-wrapper">
+                                            <ol class="ingred-list">
+                                            </ol>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button type="button" id="addIngred" class="form-control w-auto" onclick="$.fn.addIngredient();">Add Ingredient</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-7 single-recipe-details">
+                                <div class="row">
+                                    <div class="col left-col">
+                                        @Html.LabelFor(model => model.Recipe_Name):
+                                    </div>
+                                    <div class="col right-col">
+                                        @Html.TextBoxFor(model => model.Recipe_Name, new { @required = "required" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col left-col">
+                                        @Html.LabelFor(model => model.RecipeCategoriesIds):
+                                    </div>
+                                    <div class="col right-col">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                @Html.ListBoxFor(model => model.RecipeCategoriesIds, new MultiSelectList(Model.AllCategories, "Category_ID", "Category_Name"))
+                                            </div>
+                                            <div class="col-4 align-items-center d-flex">
+                                                <div id="recipeCategoriesError" class="error invisible text-danger small">Please select at least one category</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col left-col">
+                                        @Html.LabelFor(model => model.Recipe_Description):
+                                    </div>
+                                    <div class="col right-col recipeDesc">
+                                        @Html.TextAreaFor(model => model.Recipe_Description, new { @required = "required" })
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="row recipe-details">
+                                            <div class="col-12">
+                                                <div class="recipe-detail serves">
+                                                    <div class="left-col">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 13 16"><title>Serves</title><path d="M6.5 11.4c2.2 0 4.1-1.8 4.1-4.1V5.1C10.6 2.8 8.7 1 6.5 1S2.4 2.8 2.4 5.1v2.3c0 2.2 1.9 4 4.1 4zm0-1.1c-1.6 0-2.9-1.3-2.9-2.9V5.1c0-1.6 1.3-2.9 2.9-2.9 1.6 0 2.9 1.3 2.9 2.9v2.3c0 1.6-1.3 2.9-2.9 2.9z" /><path d="M12.9 14.1c-.3-1.4-1-2.7-2.1-3.6-.1-.1-.2-.1-.4-.1s-.3.1-.4.2c-.1.1-.1.3-.1.4 0 .1.1.3.2.4 1 .9 1.7 2.2 1.8 3.5H1.1c.1-1.4.8-2.6 1.8-3.5.1-.1.2-.2.2-.4 0-.1 0-.3-.1-.4-.1-.1-.3-.2-.4-.2-.1 0-.3 0-.4.1-1.1.9-1.8 2.2-2.1 3.6-.1.4-.1.8-.1 1.3 0 .3.2.6.5.6h11.9c.3 0 .6-.3.6-.6 0-.5 0-.9-.1-1.3z" /></svg>
+                                                        <span class="detail_desc">@Html.LabelFor(model => model.Servings):</span>
+                                                    </div>
+                                                    <div class="right-col">
+                                                        @Html.TextBoxFor(model => model.Servings, new { @required = "required" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="recipe-detail time">
+                                                    <div class="left-col">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 15 15"><title>Time</title><path fill-opacity=".9" d="M7.5 0C3.4 0 0 3.4 0 7.5S3.4 15 7.5 15 15 11.6 15 7.5 11.6 0 7.5 0zm0 13.5c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm.4-9.7H6.8v4.5l3.9 2.4.6-1-3.4-2V3.8z" /></svg>
+                                                        <span class="detail_desc">@Html.LabelFor(model => model.Cooking_Time):</span>
+                                                    </div>
+                                                    <div class="right-col">
+                                                        @Html.TextBoxFor(model => model.Cooking_Time, new { @required = "required" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="recipe-detail difficulty">
+                                                    <div class="left-col">
+                                                        <span class="detail_desc">@Html.LabelFor(model => model.Difficulty_Level):</span>
+                                                    </div>
+                                                    <div class="right-col">
+                                                        @Html.TextBoxFor(model => model.Difficulty_Level, new { @required = "required" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="tags-wrapper col-12">
+                                        <div class="tags-list row">
+                                            <div class="col left-col">
+                                                <svg viewbox="0 0 27.2 27.2"><g><path fill="#62A5A1" d="M26.4,1.5c0-0.3-0.3-0.6-0.7-0.7L13.8,0L0.2,13.6c-0.2,0.2-0.2,0.6,0,0.9L12.7,27c0.2,0.2,0.6,0.2,0.9,0l13.6-13.6L26.4,1.5z M13.6,25.3c-0.2,0.2-0.6,0.2-0.9,0L2,14.5c-0.2-0.2-0.3-0.6,0-0.9L14.4,1.2l10,0.9c0.3,0,0.7,0.3,0.7,0.7l0.9,10L13.6,25.3z" /><path fill="#62A5A1" d="M17.3,6.3c-1,1-0.9,2.5,0,3.5s2.6,1,3.5,0c1-1,0.9-2.5,0-3.5C19.9,5.4,18.3,5.4,17.3,6.3z M20,9c-0.5,0.5-1.3,0.5-1.8,0s-0.5-1.3,0-1.8c0.5-0.5,1.3-0.5,1.8,0C20.5,7.7,20.5,8.5,20,9z" /></g></svg>
+                                                @Html.LabelFor(model => model.RecipeTagsIds):
+                                            </div>
+                                            <div class="col right-col">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        @Html.ListBoxFor(model => model.RecipeTagsIds, new MultiSelectList(Model.AllTags, "Tag_ID", "Tag_Name"))
+                                                    </div>
+                                                    <div class="col-4 align-items-center d-flex">
+                                                        <div id="recipeTagsError" class="error invisible text-danger small">Please select at least one tag</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="recipe-nutrition col-12">
+                                        <h2>
+                                            Nutrition per serving:
+                                        </h2>
+                                        <div class="nutrition-expanded">
+                                            <ol class="row">
+                                            </ol>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <button type="button" id="addNutritionElement" class="form-control w-auto ml-0" onclick="$.fn.addNutritionElement();">Add Nutrition Element</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="recipe-instructions">
+                                    <div class="instructions-wrapper">
+                                        <div class="method-p">
+                                            <h2>Method &nbsp; <span id="recipeStepsError" class="invisible error text-danger small">Please add at least one step</span></h2>                                            
+                                            <ol class="">
+                                            </ol>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <button type="button" id="addStep" class="form-control w-auto ml-0" onclick="$.fn.addStep();">Add Step</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <input type="submit" value="Save Recipe" class="form-control mt-3 mb-3" id="save-btn" />
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
 }
 
-@using (Html.BeginForm("Create", "Recipe", FormMethod.Post)) 
-{
-    <div class="card">
-        <div class="card-header">
-            @ViewBag.Title
-        </div>
-        <div class="card-body">
-            <div class="row mx-0">
-                <h5 class="alert-warning">@ViewBag.Warning</h5>
-            </div>
-            <div class="row mx-0">
-                <div class="card-text col-3">
-                    @Html.LabelFor(model => model.Recipe_Name)
-                </div>
-                <div class="card-text col-3">
-                    @Html.TextBoxFor(model => model.Recipe_Name)
-                    <div class="text-warning">@Html.ValidationMessageFor(model => model.Recipe_Name)</div>
-                </div>
-            </div>
-            <div class="row mx-0">
-                <div class="card-text col-3">
-                    <input type="submit" value="Save" />
-                </div>
-            </div>
-        </div>
-    </div>
-}
+<script>
+    $(document).ready(function () {
+
+        if (localStorage.getItem("loggedInUserId") != undefined) {
+            $('#Author_User_ID').val(localStorage.getItem("loggedInUserId"));
+        }
+
+        var maxIngredId = 0;
+        var maxNEId = 0;
+
+        var selectIngredientList = `@Html.DropDownList("ingredDD0", new SelectList(Model.AllIngredients, "Ingredient_ID", "Ingredient_Name"), new { @class = "ingredDD" })`;
+        var originalSelectIngredientList = `@Html.DropDownList("originalIngDD0", new SelectList(Model.AllIngredients, "Ingredient_ID", "Ingredient_Name"))`;
+
+        $("textarea").each(function () {
+            this.setAttribute("style", "height:" + (this.scrollHeight + 2) + "px;overflow-y:hidden;");
+        }).on("input", function () {
+            this.style.height = 0;
+            this.style.height = (this.scrollHeight + 2) + "px";
+        });
+
+        $('#RecipeCategoriesIds').filterMultiSelect();
+        $('#RecipeTagsIds').filterMultiSelect();
+
+        $.fn.removeElement = function (el) {
+            $(el).closest('li').remove();
+        }
+
+        $.fn.addIngredient = function () {
+            maxIngredId += 1;
+            var elem = `<li>
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().Ingredient_Name)
+                                </div>
+                                <div class="col-9">
+                                    <div class="row">
+                                        <div class="col-12">`
+                                            + selectIngredientList +  `
+                                        </div>
+                                    </div>
+                                     <div class="row d-none">
+                                         <div class="col-12">`
+                                            + originalSelectIngredientList +  `
+                                         </div>
+                                     </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button type="button" class="form-control customIngredBtn">+ Add custom ingredient</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().Quantity)
+                                </div>
+                                <div class="col-9">
+                                    <input type="text" id="ingred_Quantity" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().Measurement_Unit)
+                                </div>
+                                <div class="col-9">
+                                    <input type="text" id="ingred_Measurement_Unit" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().Other_Info)
+                                </div>
+                                <div class="col-9">
+                                    <input type="text" id="ingred_Other_Info" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().IsOptional)
+                                </div>
+                                <div class="col-9">
+                                    <input type="checkbox" id="ingred_IsOptional"/>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Ingredient</button>
+                            </div>
+                        </li>
+            `;
+
+            $('.ingredient-wrapper .ingred-list').append(elem);
+
+            $('#ingredDD0').attr('id', 'ingredDD' + maxIngredId).attr('name', 'ingredDD' + maxIngredId);
+            $('#originalIngDD0').attr('id', 'originalIngDD' + maxIngredId).attr('name', 'originalIngDD' + maxIngredId);
+
+            $('#ingredDD' + maxIngredId).filterMultiSelect({
+                selectionLimit: 1,
+            });
+
+            $('div[id*="ingredDD"]').on('optionselected', function (e) {
+                var id = $(this).attr('id');
+                var originalId = 'originalIngDD' + id.replace('ingredDD', '');
+
+                $('#' + originalId + ' option').removeAttr('selected');
+                $('#' + originalId + " [value='" + $(this).find('input:checked').val() + "']").attr('selected', true);
+            });
+
+            $('.customIngredBtn').click(function (ev) {
+                popupHandler.child_open("/Ingredient/Create", "Add Ingredient");
+            })
+        }
+
+        $.fn.addNutritionElement = function () {
+            maxNEId += 1;
+            var elem = `<li class="col-6">
+                            <div>
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        @Html.LabelFor(Model => Model.RecipeNutritionElements.FirstOrDefault().Element_Name)
+                                    </div>
+                                    <div class="col-9">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                @Html.DropDownList("nutritionelemDD0", new SelectList(Model.AllNutritionElements, "NutritionElement_ID", "Element_Name"), new { @class = "nutritionelemDD" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        @Html.LabelFor(Model => Model.RecipeNutritionElements.FirstOrDefault().Value)
+                                    </div>
+                                    <div class="col-9">
+                                        <input type="text" id="nutritionElement_Value" class="form-control"/>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        @Html.LabelFor(Model => Model.RecipeNutritionElements.FirstOrDefault().Measurement_Unit)
+                                    </div>
+                                    <div class="col-9">
+                                        <input type="text" id="nutritionElement_Measurement_Unit" class="form-control"/>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Nutrition Element</button>
+                                </div>
+                            </div>
+                        </li>`;
+
+            $('.nutrition-expanded ol').append(elem);
+
+            $('#nutritionelemDD0').attr('id', 'nutritionelemDD' + maxNEId).attr('name', 'nutritionelemDD' + maxNEId);
+
+            $('#nutritionelemDD' + maxNEId).filterMultiSelect({
+                selectionLimit: 1,
+            });
+        }
+
+        $.fn.addStep = function () {
+            var elem = `<li class="step-wrapper">
+                            <div class="row mb-3">
+                                 <div class="col-3">
+                                     @Html.LabelFor(Model => Model.RecipeSteps.FirstOrDefault().Step_Title)
+                                 </div>
+                                 <div class="col-9">
+                                    <input type="text" id="step_Step_Title" class="form-control"/>
+                                 </div>
+                             </div>
+
+                             <div class="row mb-3">
+                                 <div class="col-3">
+                                     @Html.LabelFor(Model => Model.RecipeSteps.FirstOrDefault().Step_Description)
+                                 </div>
+                                 <div class="col-9">
+                                    <textarea id="step_Step_Description" class="form-control"></textarea>
+                                 </div>
+                             </div>
+
+                             <div class="row mb-3">
+                                 <div class="col-3">
+                                     @Html.LabelFor(Model => Model.RecipeSteps.FirstOrDefault().IsOptional)
+                                 </div>
+                                 <div class="col-9">
+                                    <input type="checkbox" id="step_IsOptional"/>
+                                 </div>
+                             </div>
+
+                             <div class="row">
+                                 <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Step</button>
+                             </div>
+                         </li>`;
+
+            $('.instructions-wrapper ol').append(elem);
+        }
+
+        function validateForm() {
+            var valid = 1;
+
+            if ($('#RecipeTagsIds .selected-items span').length == 0) {
+                $('#recipeTagsError').removeClass('invisible');
+                valid = 0;
+            }
+
+            if ($('#RecipeCategoriesIds .selected-items span').length == 0) {
+                $('#recipeCategoriesError').removeClass('invisible');
+                valid = 0;
+            }
+
+            if ($('.ingred-list li').length == 0) {
+                $('#recipeIngredientsError').removeClass('invisible');
+                valid = 0;
+            }
+
+            if ($('.instructions-wrapper ol li').length == 0) {
+                $('#recipeStepsError').removeClass('invisible');
+                valid = 0;
+            }
+
+            return valid;
+        }
+
+        $('form').submit(function (ev) {
+            if (validateForm() == 0) {
+                return false;
+            }
+
+            $('.ingred-list li').each(function (idx, el) {
+                var id = $(el).find('.filter-multi-select input:checked').val();
+                var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
+                var quantity = $(el).find('#ingred_Quantity').val();
+                var unit = $(el).find('#ingred_Measurement_Unit').val();
+                //debugger;
+                var opt = $(el).find('#ingred_IsOptional').is(":checked");
+                var otherInfo = $(el).find('#ingred_Other_Info').val();
+
+                var elements = `<input id="RecipeIngredients_` + idx + `__Ingredient_ID"
+                                name = "RecipeIngredients[` + idx + `].Ingredient_ID" type="hidden" value="` + id + `" >
+                                <input id="RecipeIngredients_` + idx + `__Ingredient_Name"
+                                name = "RecipeIngredients[` + idx + `].Ingredient_Name" type="hidden" value="` + name + `" >
+                                <input id="RecipeIngredients_` + idx + `__Quantity"
+                                name = "RecipeIngredients[` + idx + `].Quantity" type="hidden" value="` + quantity + `" >
+                                <input id="RecipeIngredients_` + idx + `__Measurement_Unit"
+                                name = "RecipeIngredients[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >
+                                <input id="RecipeIngredients_` + idx + `__IsOptional"
+                                name = "RecipeIngredients[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >
+                                <input id="RecipeIngredients_` + idx + `__Other_Info"
+                                name = "RecipeIngredients[` + idx + `].Other_Info" type="hidden" value="` + otherInfo + `" >`;
+                $('form').prepend(elements);
+            })
+
+            $('.nutrition-expanded ol li').each(function (idx, el) {
+                var id = $(el).find('.filter-multi-select input:checked').val();
+                var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
+                var value = $(el).find('#nutritionElement_Value').val();
+                var unit = $(el).find('#nutritionElement_Measurement_Unit').val();
+
+                var elements = `<input id="RecipeNutritionElements_` + idx + `__NutritionElement_ID"
+                    name = "RecipeNutritionElements[` + idx + `].NutritionElement_ID" type="hidden" value="` + id + `" >
+                    <input id="RecipeNutritionElements_` + idx + `__Element_Name"
+                    name = "RecipeNutritionElements[` + idx + `].Element_Name" type="hidden" value="` + name + `" >
+                    <input id="RecipeNutritionElements_` + idx + `__Value"
+                    name = "RecipeNutritionElements[` + idx + `].Value" type="hidden" value="` + value + `" >
+                    <input id="RecipeNutritionElements_` + idx + `__Measurement_Unit"
+                    name = "RecipeNutritionElements[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >`;
+
+                $('form').prepend(elements);
+            })
+
+            $('.instructions-wrapper ol li').each(function (idx, el) {
+                var title = $(el).find('#step_Step_Title').val();
+                var descr = $(el).find('#step_Step_Description').val();
+                var opt = $(el).find('#step_IsOptional').is(":checked");
+
+                var elements = `<input id="RecipeSteps_` + idx + `__Step_Number"
+                    name = "RecipeSteps_[` + idx + `].Step_Number" type="hidden" value="` + (idx + 1) + `" >
+                    <input id="RecipeSteps_` + idx + `__Step_Title"
+                    name = "RecipeSteps[` + idx + `].Step_Title" type="hidden" value="` + title + `" >
+                    <input id="RecipeSteps_` + idx + `__Step_Description"
+                    name = "RecipeSteps[` + idx + `].Step_Description" type="hidden" value="` + descr + `" >
+                    <input id="RecipeSteps_` + idx + `__IsOptional"
+                    name = "RecipeSteps[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >`;
+
+                $('form').prepend(elements);
+            })
+
+            return true;
+        })
+
+        $('.customIngredBtn').click(function (ev) {
+            popupHandler.child_open("/Ingredient/Create", "Add Ingredient");
+        })
+
+        var popupHandler = {
+            popupWindow: null,
+            child_open: function (url, name) {
+                if (popupHandler.popupWindow && !popupHandler.popupWindow.closed)
+                    popupHandler.popupWindow.focus();
+                else {
+                    var h = 700;
+                    var w = 1100;
+
+                    var y = window.top.outerHeight / 2 + window.top.screenY - (h / 2);
+                    var x = window.top.outerWidth / 2 + window.top.screenX - (w / 2);
+
+                    var params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no, width=${w},height=${h},top=${y}, left=${x}`;
+
+                    popupHandler.popupWindow = window.open(url, name, params);
+                }
+            }
+        }
+
+        window.onmessage = function (event) {
+            if (popupHandler.popupWindow && event.data) {
+                var resource = event.data;
+                popupHandler.popupWindow.close();
+                var val = JSON.parse(resource);
+
+                var element = `<option value="` + val.value + `">` + val.text + `</option>`;
+                selectIngredientList = selectIngredientList.substring(0, selectIngredientList.length - 9) + element + '</select>';
+                originalSelectIngredientList = originalSelectIngredientList.substring(0, originalSelectIngredientList.length - 9) + element + '</select>';
+
+                $('div[id*="ingredDD"]').each(function(idx, el){
+                    var id = $(el).attr('id');
+                    var originalId = 'originalIngDD' + id.replace('ingredDD', '');
+
+                    $('#' + originalId).append(element);
+                    $(el).replaceWith($("#" + originalId).prop('outerHTML').replaceAll('originalIngDD', 'ingredDD'));
+
+                    $("#" + id).filterMultiSelect({
+                        selectionLimit: 1,
+                    });
+                })
+
+                $('div[id*="ingredDD"]').on('optionselected', function (e) {
+                    var id = $(this).attr('id');
+                    var originalId = 'originalIngDD' + id.replace('ingredDD', '');
+
+                    $('#' + originalId + ' option').removeAttr('selected');
+                    $('#' + originalId + " [value='" + $(this).find('input:checked').val() + "']").attr('selected', true);
+                });
+            }
+        };
+
+        $('div[id*="ingredDD"]').on('optionselected', function (e) {
+            var id = $(this).attr('id');
+            var originalId = 'originalIngDD' + id.replace('ingredDD', '');
+
+            $('#' + originalId + ' option').removeAttr('selected');
+            $('#' + originalId + " [value='" + $(this).find('input:checked').val() + "']").attr('selected', true);
+        });
+
+    });
+</script>
+
+

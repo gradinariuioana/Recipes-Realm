@@ -1,49 +1,43 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Data.Entity;
+﻿using System.Linq;
 using ModelsLibrary;
+using DatabaseRepository;
 
-namespace DataAccess
-{
-    public class RecipeIngredientAccessor
-    {
-        public static IEnumerable<RecipeIngredient> GetIngredientsForRecipe(long id)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var ingreds = context.RecipeIngredients.Where(r => r.Recipe_ID == id).Include(r => r.Ingredient).ToList();
-                return ingreds;
-            }
+namespace DataAccess {
+    public class RecipeIngredientAccessor : IRecipeIngredientAccessor {
+
+        public RecipesRealmContext context;
+
+        public RecipeIngredientAccessor(IRecipesRealmContext db) {
+            context = (RecipesRealmContext)db;
         }
 
-        public static ICollection<long> GetIngredientsIdsForRecipe(long id) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var ingreds = context.RecipeIngredients.Where(r => r.Recipe_ID == id).Select(r => r.Ingredient_ID).ToList();
-                return ingreds;
-            }
+        public void AddRecipeIngredient(RecipeIngredient recipeIngredient) {
+            context.RecipeIngredients.Add(recipeIngredient);
+
+            context.SaveChanges();
         }
 
-        public static void AddRecipeIngredient(RecipeIngredient recipeIngredient) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.RecipeIngredients.Add(recipeIngredient);
+        public void DeleteAllIngredientsForRecipe(long recipeId) {
+            var recipeIngreds = context.RecipeIngredients.Where(r => r.Recipe_ID == recipeId).ToList();
 
-                context.SaveChanges();
-            }
+            context.RecipeIngredients.RemoveRange(recipeIngreds);
+            context.SaveChanges();
         }
 
-        public static void DeleteAllIngredientsForRecipe(long recipeId) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var recipeIngreds = context.RecipeIngredients.Where(r => r.Recipe_ID == recipeId).ToList();
+        public void DeleteRecipeIngredient(long id) {
+            var recipeIngred = context.RecipeIngredients.FirstOrDefault(r => r.ID == id);
 
-                context.RecipeIngredients.RemoveRange(recipeIngreds);
-                context.SaveChanges();
-            }
-        }
+            if (recipeIngred != null) context.RecipeIngredients.Remove(recipeIngred);
 
-        public static void DeleteRecipeIngredient(RecipeIngredient recipeIngredient) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.RecipeIngredients.Remove(recipeIngredient);
-                context.SaveChanges();
-            }
+            context.SaveChanges();
         }
+    }
+
+    public interface IRecipeIngredientAccessor {
+        void AddRecipeIngredient(RecipeIngredient recipeIngredient);
+
+        void DeleteAllIngredientsForRecipe(long recipeId);
+
+        void DeleteRecipeIngredient(long id);
     }
 }

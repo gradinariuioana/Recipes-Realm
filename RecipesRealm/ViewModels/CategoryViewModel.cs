@@ -1,15 +1,11 @@
-﻿using ModelsLibrary;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
-namespace RecipesRealm.ViewModels
-{
+namespace RecipesRealm.ViewModels {
     public class CategoryViewModel
-    {         
+    {
+        public long? Recipe_ID { get; set; }
         public long Category_ID { get; set; }
 
         [DisplayName("Category Name")]
@@ -21,5 +17,7 @@ namespace RecipesRealm.ViewModels
 
         [DisplayName("Recipes with this Category")]
         public string Category_Recipes { get; set; }
+
+        public ICollection<RecipeViewModel> Recipes { get; set; }
     }
 }

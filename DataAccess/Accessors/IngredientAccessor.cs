@@ -1,33 +1,39 @@
-﻿using ModelsLibrary;
+﻿using DatabaseRepository;
+using ModelsLibrary;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DataAccess
-{
-    public class IngredientAccessor
-    {
-        public static IEnumerable<Ingredient> GetIngredientsList() {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var ingredients = context.Ingredients.ToList();
-                return ingredients;
-            }
+namespace DataAccess {
+    public class IngredientAccessor : IIngredientAccessor {
+
+        public RecipesRealmContext context;
+
+        public IngredientAccessor(IRecipesRealmContext db) {
+            context = (RecipesRealmContext)db;
         }
 
-        public static bool CheckIngredientExists(long id) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                Ingredient ingredient = context.Ingredients.FirstOrDefault(t => t.Ingredient_ID == id);
-
-                return ingredient != null;
-            }
+        public IEnumerable<Ingredient> GetIngredientsList() {
+            var ingredients = context.Ingredients.ToList();
+            return ingredients;
         }
 
-        public static long AddIngredient(Ingredient ingredient) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.Ingredients.Add(ingredient);
-                context.SaveChanges();
+        public bool CheckIngredientExists(string ingredient) {
+            Ingredient ing = context.Ingredients.FirstOrDefault(t => t.Ingredient_Name == ingredient);
 
-                return ingredient.Ingredient_ID;
-            }
+            return ing != null;
         }
+
+        public long AddIngredient(Ingredient ingredient) {
+            context.Ingredients.Add(ingredient);
+            context.SaveChanges();
+
+            return ingredient.Ingredient_ID;
+        }
+    }
+
+    public interface IIngredientAccessor {
+        IEnumerable<Ingredient> GetIngredientsList();
+        bool CheckIngredientExists(string ingredient);
+        long AddIngredient(Ingredient ingredient);
     }
 }

@@ -1,14 +1,13 @@
 ﻿@model RecipesRealm.ViewModels.RecipeViewModel
 
-@using (Html.BeginForm("Edit", "Recipe", FormMethod.Post))
-{
+@using (Html.BeginForm("Edit", "Recipe", FormMethod.Post)) {
 
-    if (!string.IsNullOrEmpty(ViewBag.Warning))
-    {
+    if (!string.IsNullOrEmpty(ViewBag.Warning)) {
         <h1>@ViewBag.Warning</h1>
     }
-    else
-    {
+    else {
+        @Html.HiddenFor(model => model.Author_User_ID)
+        @Html.HiddenFor(model => model.Creation_Date)
         <section id="recipe-single" class="edit-recipe">
             <div class="container recipe-container">
                 <div class="row recipe-header">
@@ -19,28 +18,86 @@
                                     <img src="../../@Html.DisplayFor(model => model.Picture_Path)" alt="@Html.DisplayNameFor(model => model.Picture_Path)">
                                 </div>
                                 <div class="recipe-user-controls">
-                                    <div class="save-recipe">
-                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-                                    </div>
                                 </div>
                                 <div class="recipe-ingredients">
                                     <div class="ingredients-heading">
-                                        <h2>Ingredients</h2>
+                                        <h2>Ingredients &nbsp; <span id="recipeIngredientsError" class="error invisible text-danger small">Please add at least one ingredient</span></h2>                                        
                                     </div>
                                     <div class="row">
                                         <div class="col-12 ingredient-wrapper">
-                                            <ul class="ingred-list">
-                                                @foreach (var ingred in Model.RecipeIngredients)
-                                                {
-                                                <li>
-                                                    @Html.TextBoxFor(modelItem => ingred.Quantity)
-                                                    @Html.TextBoxFor(modelItem => ingred.Measurement_Unit)
-                                                    @Html.DropDownList("ingredDD", new SelectList(Model.AllIngredients, "Ingredient_ID", "Ingredient_Name", ingred.Ingredient_ID))
-                                                    @Html.TextBoxFor(modelItem => ingred.Other_Info)
-                                                    @Html.CheckBoxFor(modelItem => ingred.IsOptional)
-                                                </li>
+                                            <ol class="ingred-list">
+                                                @foreach (var ingred in Model.RecipeIngredients) {
+                                                    <li>
+                                                        <div class="row mb-3">
+                                                            <div class="col-3">
+                                                                @Html.LabelFor(modelItem => ingred.Ingredient_Name)
+                                                            </div>
+                                                            <div class="col-9">
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        @Html.DropDownList("ingredDD" + ingred.Ingredient_ID, new SelectList(Model.AllIngredients, "Ingredient_ID", "Ingredient_Name", ingred.Ingredient_ID), new { @class = "ingredDD" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row d-none">
+                                                                    <div class="col-12">
+                                                                        @Html.DropDownList("originalIngDD" + ingred.Ingredient_ID, new SelectList(Model.AllIngredients, "Ingredient_ID", "Ingredient_Name", ingred.Ingredient_ID))
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <button type="button" class="form-control customIngredBtn">+ Add custom ingredient</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-3">
+                                                            <div class="col-3">
+                                                                @Html.LabelFor(modelItem => ingred.Quantity)
+                                                            </div>
+                                                            <div class="col-9">
+                                                                @Html.TextBoxFor(modelItem => ingred.Quantity, new { @class = "form-control" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-3">
+                                                            <div class="col-3">
+                                                                @Html.LabelFor(modelItem => ingred.Measurement_Unit)
+                                                            </div>
+                                                            <div class="col-9">
+                                                                @Html.TextBoxFor(modelItem => ingred.Measurement_Unit, new { @class = "form-control" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-3">
+                                                            <div class="col-3">
+                                                                @Html.LabelFor(modelItem => ingred.Other_Info)
+                                                            </div>
+                                                            <div class="col-9">
+                                                                @Html.TextBoxFor(modelItem => ingred.Other_Info, new { @class = "form-control" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-3">
+                                                            <div class="col-3">
+                                                                @Html.LabelFor(modelItem => ingred.IsOptional)
+                                                            </div>
+                                                            <div class="col-9">
+                                                                @Html.CheckBoxFor(modelItem => ingred.IsOptional.Value)
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Ingredient</button>
+                                                        </div>
+                                                    </li>
                                                 }
-                                            </ul>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button type="button" id="addIngred" class="form-control w-auto" onclick="$.fn.addIngredient();">Add Ingredient</button>
                                         </div>
                                     </div>
                                 </div>
@@ -51,15 +108,22 @@
                                         @Html.LabelFor(model => model.Recipe_Name):
                                     </div>
                                     <div class="col right-col">
-                                        @Html.TextBoxFor(model => model.Recipe_Name)
+                                        @Html.TextBoxFor(model => model.Recipe_Name, new { @required = "required" })
                                     </div>
-                                </div>                                 
+                                </div>
                                 <div class="row">
                                     <div class="col left-col">
                                         @Html.LabelFor(model => model.RecipeCategoriesIds):
                                     </div>
                                     <div class="col right-col">
-                                        @Html.ListBoxFor(model => model.RecipeCategoriesIds, new MultiSelectList(Model.AllCategories, "Category_ID", "Category_Name"))
+                                        <div class="row">
+                                            <div class="col-8">
+                                                @Html.ListBoxFor(model => model.RecipeCategoriesIds, new MultiSelectList(Model.AllCategories, "Category_ID", "Category_Name"))
+                                            </div>
+                                            <div class="col-4 align-items-center d-flex">
+                                                <div id="recipeCategoriesError" class="error invisible text-danger small">Please select at least one category</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -68,7 +132,7 @@
                                         @Html.LabelFor(model => model.Recipe_Description):
                                     </div>
                                     <div class="col right-col recipeDesc">
-                                        @Html.TextAreaFor(model => model.Recipe_Description)
+                                        @Html.TextAreaFor(model => model.Recipe_Description, new { @required = "required" })
                                     </div>
 
                                     <div class="col-12">
@@ -80,7 +144,7 @@
                                                         <span class="detail_desc">@Html.LabelFor(model => model.Servings):</span>
                                                     </div>
                                                     <div class="right-col">
-                                                        @Html.TextBoxFor(model => model.Servings)
+                                                        @Html.TextBoxFor(model => model.Servings, new { @required = "required" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -91,7 +155,7 @@
                                                         <span class="detail_desc">@Html.LabelFor(model => model.Cooking_Time):</span>
                                                     </div>
                                                     <div class="right-col">
-                                                        @Html.TextBoxFor(model => model.Cooking_Time)
+                                                        @Html.TextBoxFor(model => model.Cooking_Time, new { @required = "required" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -101,7 +165,7 @@
                                                         <span class="detail_desc">@Html.LabelFor(model => model.Difficulty_Level):</span>
                                                     </div>
                                                     <div class="right-col">
-                                                        @Html.TextBoxFor(model => model.Difficulty_Level)
+                                                        @Html.TextBoxFor(model => model.Difficulty_Level, new { @required = "required" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -115,38 +179,65 @@
                                                 @Html.LabelFor(model => model.RecipeTagsIds):
                                             </div>
                                             <div class="col right-col">
-                                                @Html.ListBoxFor(model => model.RecipeTagsIds, new MultiSelectList(Model.AllTags, "Tag_ID", "Tag_Name"))
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        @Html.ListBoxFor(model => model.RecipeTagsIds, new MultiSelectList(Model.AllTags, "Tag_ID", "Tag_Name"))
+                                                    </div>
+                                                    <div class="col-4 align-items-center d-flex">
+                                                        <div id="recipeTagsError" class="error invisible text-danger small">Please select at least one tag</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="recipe-nutrition col-12">
-                                        <h6>
-                                            Nutrition per serving
-                                        </h6>
+                                        <h2>
+                                            Nutrition per serving:
+                                        </h2>
                                         <div class="nutrition-expanded">
-                                            <ul>
-                                                @foreach (var elem in Model.RecipeNutritionElements)
-                                                {
-                                                    <li>
-                                                        <div class="inner">
-                                                            <span class="title top">
-                                                                @Html.DisplayFor(modelItem => elem.Element_Name)
-                                                            </span>
-                                                            <span class="bottom">
-                                                                @Html.DisplayFor(modelItem => elem.Value) @Html.DisplayFor(modelItem => elem.Measurement_Unit)
-                                                            </span>
-                                                        </div>
-                                                        <div class="moreInfo">
-                                                            <h5>
-                                                                @Html.DisplayFor(modelItem => elem.Element_Name)
-                                                            </h5>
-                                                            <p>
-                                                                @Html.DisplayFor(modelItem => elem.Element_Description)
-                                                            </p>
+                                            <ol class="row">
+                                                @foreach (var nutritionElement in Model.RecipeNutritionElements) {
+                                                    <li class="col-6">
+                                                        <div>
+                                                            <div class="row mb-3">
+                                                                <div class="col-3">
+                                                                    @Html.LabelFor(modelItem => nutritionElement.Element_Name)
+                                                                </div>
+                                                                <div class="col-9">
+                                                                    @Html.DropDownList("nutritionelemDD" + nutritionElement.NutritionElement_ID, new SelectList(Model.AllNutritionElements, "NutritionElement_ID", "Element_Name", nutritionElement.NutritionElement_ID), new { @class = "nutritionelemDD" })
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-3">
+                                                                <div class="col-3">
+                                                                    @Html.LabelFor(modelItem => nutritionElement.Value)
+                                                                </div>
+                                                                <div class="col-9">
+                                                                    @Html.TextBoxFor(modelItem => nutritionElement.Value, new { @class = "form-control" })
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row mb-3">
+                                                                <div class="col-3">
+                                                                    @Html.LabelFor(modelItem => nutritionElement.Measurement_Unit)
+                                                                </div>
+                                                                <div class="col-9">
+                                                                    @Html.TextBoxFor(modelItem => nutritionElement.Measurement_Unit, new { @class = "form-control" })
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Nutrition Element</button>
+                                                            </div>
                                                         </div>
                                                     </li>
                                                 }
-                                            </ul>
+                                            </ol>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <button type="button" id="addNutritionElement" class="form-control w-auto ml-0" onclick="$.fn.addNutritionElement();">Add Nutrition Element</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -154,33 +245,56 @@
                                 <div class="recipe-instructions">
                                     <div class="instructions-wrapper">
                                         <div class="method-p">
-                                            <h2>Method</h2>
-                                            <div class="">
-                                                @foreach (var step in Model.RecipeSteps)
-                                                {
-                                                    <div class="step-wrapper">
-                                                        <div class="title">
-                                                            @if (step.Step_Number.HasValue)
-                                                            {
-                                                                <span class="number">@Html.DisplayFor(modelItem => step.Step_Number). </span>
-                                                            }
-                                                            @Html.DisplayFor(modelItem => step.Step_Title)
-                                                            @if (step.IsOptional == true)
-                                                            {
-                                                                <span class="optional">(Optional)</span>
-                                                            }
+                                            <h2>Method &nbsp; <span id="recipeStepsError" class="invisible error text-danger small">Please add at least one step</span></h2>                                            
+                                            <ol class="">
+                                                @foreach (var step in Model.RecipeSteps) {
+                                                    <li class="step-wrapper">
+                                                        <div class="row mb-3">
+                                                            <div class="col-3">
+                                                                @Html.LabelFor(modelItem => step.Step_Title)
+                                                            </div>
+                                                            <div class="col-9">
+                                                                @Html.TextBoxFor(modelItem => step.Step_Title, new { @class = "form-control" })
+                                                            </div>
                                                         </div>
-                                                        <p>
-                                                            @Html.DisplayFor(modelItem => step.Step_Description)
-                                                        </p>
-                                                    </div>
+
+                                                        <div class="row mb-3">
+                                                            <div class="col-3">
+                                                                @Html.LabelFor(modelItem => step.Step_Description)
+                                                            </div>
+                                                            <div class="col-9">
+                                                                @Html.TextAreaFor(modelItem => step.Step_Description, new { @class = "form-control" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-3">
+                                                            <div class="col-3">
+                                                                @Html.LabelFor(modelItem => step.IsOptional)
+                                                            </div>
+                                                            <div class="col-9">
+                                                                @Html.CheckBoxFor(modelItem => step.IsOptional)
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Step</button>
+                                                        </div>
+                                                    </li>
                                                 }
+                                            </ol>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <button type="button" id="addStep" class="form-control w-auto ml-0" onclick="$.fn.addStep();">Add Step</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-12">
+                        <input type="submit" value="Save Recipe" class="form-control mt-3 mb-3" id="save-btn" />
                     </div>
                 </div>
             </div>
@@ -190,6 +304,15 @@
 
 <script>
     $(document).ready(function () {
+
+        var maxIngredId = @(Model.RecipeIngredients.Count > 0 ? Model.RecipeIngredients.Select(x => x.Ingredient_ID).Max() : 0);
+        var maxNEId = @(Model.RecipeNutritionElements.Count > 0 ? Model.RecipeNutritionElements.Select(x => x.NutritionElement_ID).Max() : 0);
+
+        var selectIngredientList = `@Html.DropDownList("ingredDD0", new SelectList(Model.AllIngredients, "Ingredient_ID", "Ingredient_Name"), new { @class = "ingredDD" })`;
+        var originalSelectIngredientList = `@Html.DropDownList("originalIngDD0", new SelectList(Model.AllIngredients, "Ingredient_ID", "Ingredient_Name"))`;
+
+        var recipeId = @Model.Recipe_ID;
+
         $("textarea").each(function () {
             this.setAttribute("style", "height:" + (this.scrollHeight + 2) + "px;overflow-y:hidden;");
         }).on("input", function () {
@@ -199,6 +322,362 @@
 
         $('#RecipeCategoriesIds').filterMultiSelect();
         $('#RecipeTagsIds').filterMultiSelect();
+
+        $('.ingredDD').each(function () {
+            $(this).filterMultiSelect({
+                selectionLimit: 1,
+            })
+        });
+
+        $('.nutritionelemDD').each(function () {
+            $(this).filterMultiSelect({
+                selectionLimit: 1,
+            })
+        });
+
+        $.fn.removeElement = function (el) {
+            $(el).closest('li').remove();
+        }
+
+        $.fn.addIngredient = function () {
+            maxIngredId += 1;
+            var elem = `<li>
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().Ingredient_Name)
+                                </div>
+                                <div class="col-9">
+                                    <div class="row">
+                                        <div class="col-12">`
+                                            + selectIngredientList +  `
+                                        </div>
+                                    </div>
+                                     <div class="row d-none">
+                                         <div class="col-12">`
+                                            + originalSelectIngredientList +  `
+                                         </div>
+                                     </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button type="button" class="form-control customIngredBtn">+ Add custom ingredient</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().Quantity)
+                                </div>
+                                <div class="col-9">
+                                    <input type="text" id="ingred_Quantity" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().Measurement_Unit)
+                                </div>
+                                <div class="col-9">
+                                    <input type="text" id="ingred_Measurement_Unit" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().Other_Info)
+                                </div>
+                                <div class="col-9">
+                                    <input type="text" id="ingred_Other_Info" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    @Html.LabelFor(Model => Model.RecipeIngredients.FirstOrDefault().IsOptional)
+                                </div>
+                                <div class="col-9">
+                                    <input type="checkbox" id="ingred_IsOptional"/>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Ingredient</button>
+                            </div>
+                        </li>
+            `;
+
+            $('.ingredient-wrapper .ingred-list').append(elem);
+
+            $('#ingredDD0').attr('id', 'ingredDD' + maxIngredId).attr('name', 'ingredDD' + maxIngredId);
+            $('#originalIngDD0').attr('id', 'originalIngDD' + maxIngredId).attr('name', 'originalIngDD' + maxIngredId);
+
+            $('#ingredDD' + maxIngredId).filterMultiSelect({
+                selectionLimit: 1,
+            });
+
+            $('div[id*="ingredDD"]').on('optionselected', function (e) {
+                var id = $(this).attr('id');
+                var originalId = 'originalIngDD' + id.replace('ingredDD', '');
+
+                $('#' + originalId + ' option').removeAttr('selected');
+                $('#' + originalId + " [value='" + $(this).find('input:checked').val() + "']").attr('selected', true);
+            });
+
+            $('.customIngredBtn').click(function (ev) {
+                popupHandler.child_open("/Ingredient/Create", "Add Ingredient");
+            })
+        }
+
+        $.fn.addNutritionElement = function () {
+            maxNEId += 1;
+            var elem = `<li class="col-6">
+                            <div>
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        @Html.LabelFor(Model => Model.RecipeNutritionElements.FirstOrDefault().Element_Name)
+                                    </div>
+                                    <div class="col-9">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                @Html.DropDownList("nutritionelemDD0", new SelectList(Model.AllNutritionElements, "NutritionElement_ID", "Element_Name"), new { @class = "nutritionelemDD" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        @Html.LabelFor(Model => Model.RecipeNutritionElements.FirstOrDefault().Value)
+                                    </div>
+                                    <div class="col-9">
+                                        <input type="text" id="nutritionElement_Value" class="form-control"/>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        @Html.LabelFor(Model => Model.RecipeNutritionElements.FirstOrDefault().Measurement_Unit)
+                                    </div>
+                                    <div class="col-9">
+                                        <input type="text" id="nutritionElement_Measurement_Unit" class="form-control"/>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Nutrition Element</button>
+                                </div>
+                            </div>
+                        </li>`;
+
+            $('.nutrition-expanded ol').append(elem);
+
+            $('#nutritionelemDD0').attr('id', 'nutritionelemDD' + maxNEId).attr('name', 'nutritionelemDD' + maxNEId);
+
+            $('#nutritionelemDD' + maxNEId).filterMultiSelect({
+                selectionLimit: 1,
+            });
+        }
+
+        $.fn.addStep = function () {
+            var elem = `<li class="step-wrapper">
+                            <div class="row mb-3">
+                                 <div class="col-3">
+                                     @Html.LabelFor(Model => Model.RecipeSteps.FirstOrDefault().Step_Title)
+                                 </div>
+                                 <div class="col-9">
+                                    <input type="text" id="step_Step_Title" class="form-control"/>
+                                 </div>
+                             </div>
+
+                             <div class="row mb-3">
+                                 <div class="col-3">
+                                     @Html.LabelFor(Model => Model.RecipeSteps.FirstOrDefault().Step_Description)
+                                 </div>
+                                 <div class="col-9">
+                                    <textarea id="step_Step_Description" class="form-control"></textarea>
+                                 </div>
+                             </div>
+
+                             <div class="row mb-3">
+                                 <div class="col-3">
+                                     @Html.LabelFor(Model => Model.RecipeSteps.FirstOrDefault().IsOptional)
+                                 </div>
+                                 <div class="col-9">
+                                    <input type="checkbox" id="step_IsOptional"/>
+                                 </div>
+                             </div>
+
+                             <div class="row">
+                                 <button type="button" class="form-control ml-2 w-auto" onclick="$.fn.removeElement(this);">Remove Step</button>
+                             </div>
+                         </li>`;
+
+            $('.instructions-wrapper ol').append(elem);
+        }
+
+        function validateForm() {
+            var valid = 1;
+
+            if ($('#RecipeTagsIds .selected-items span').length == 0) {
+                $('#recipeTagsError').removeClass('invisible');
+                valid = 0;
+            }
+
+            if ($('#RecipeCategoriesIds .selected-items span').length == 0) {
+                $('#recipeCategoriesError').removeClass('invisible');
+                valid = 0;
+            }
+
+            if ($('.ingred-list li').length == 0) {
+                $('#recipeIngredientsError').removeClass('invisible');
+                valid = 0;
+            }
+
+            if ($('.instructions-wrapper ol li').length == 0) {
+                $('#recipeStepsError').removeClass('invisible');
+                valid = 0;
+            }
+
+            return valid;
+        }
+
+        $('form').submit(function (ev) {
+            if (validateForm() == 0) {
+                return false;
+            }
+
+            $('.ingred-list li').each(function (idx, el) {
+                var id = $(el).find('.filter-multi-select input:checked').val();
+                var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
+                var quantity = $(el).find('#ingred_Quantity').val();
+                var unit = $(el).find('#ingred_Measurement_Unit').val();
+                //debugger;
+                var opt = $(el).find('#ingred_IsOptional').is(":checked");
+                var otherInfo = $(el).find('#ingred_Other_Info').val();
+
+                var elements = `<input id="RecipeIngredients_` + idx + `__Ingredient_ID"
+                                name = "RecipeIngredients[` + idx + `].Ingredient_ID" type="hidden" value="` + id + `" >
+                                <input id="RecipeIngredients_` + idx + `__Recipe_ID"
+                                name = "RecipeIngredients[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                                <input id="RecipeIngredients_` + idx + `__Ingredient_Name"
+                                name = "RecipeIngredients[` + idx + `].Ingredient_Name" type="hidden" value="` + name + `" >
+                                <input id="RecipeIngredients_` + idx + `__Quantity"
+                                name = "RecipeIngredients[` + idx + `].Quantity" type="hidden" value="` + quantity + `" >
+                                <input id="RecipeIngredients_` + idx + `__Measurement_Unit"
+                                name = "RecipeIngredients[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >
+                                <input id="RecipeIngredients_` + idx + `__IsOptional"
+                                name = "RecipeIngredients[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >
+                                <input id="RecipeIngredients_` + idx + `__Other_Info"
+                                name = "RecipeIngredients[` + idx + `].Other_Info" type="hidden" value="` + otherInfo + `" >`;
+                $('form').prepend(elements);
+            })
+
+            $('.nutrition-expanded ol li').each(function (idx, el) {
+                var id = $(el).find('.filter-multi-select input:checked').val();
+                var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
+                var value = $(el).find('#nutritionElement_Value').val();
+                var unit = $(el).find('#nutritionElement_Measurement_Unit').val();
+
+                var elements = `<input id="RecipeNutritionElements_` + idx + `__NutritionElement_ID"
+                    name = "RecipeNutritionElements[` + idx + `].NutritionElement_ID" type="hidden" value="` + id + `" >
+                    <input id="RecipeNutritionElements_` + idx + `__Recipe_ID"
+                    name = "RecipeNutritionElements[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                    <input id="RecipeNutritionElements_` + idx + `__Element_Name"
+                    name = "RecipeNutritionElements[` + idx + `].Element_Name" type="hidden" value="` + name + `" >
+                    <input id="RecipeNutritionElements_` + idx + `__Value"
+                    name = "RecipeNutritionElements[` + idx + `].Value" type="hidden" value="` + value + `" >
+                    <input id="RecipeNutritionElements_` + idx + `__Measurement_Unit"
+                    name = "RecipeNutritionElements[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >`;
+
+                $('form').prepend(elements);
+            })
+
+            $('.instructions-wrapper ol li').each(function (idx, el) {
+                var title = $(el).find('#step_Step_Title').val();
+                var descr = $(el).find('#step_Step_Description').val();
+                var opt = $(el).find('#step_IsOptional').is(":checked");
+
+                var elements = `<input id="RecipeSteps_` + idx + `__Step_Number"
+                    name = "RecipeSteps_[` + idx + `].Step_Number" type="hidden" value="` + (idx + 1) + `" >
+                    <input id="RecipeSteps_` + idx + `__Recipe_ID"
+                    name = "RecipeSteps_[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                    <input id="RecipeSteps_` + idx + `__Step_Title"
+                    name = "RecipeSteps[` + idx + `].Step_Title" type="hidden" value="` + title + `" >
+                    <input id="RecipeSteps_` + idx + `__Step_Description"
+                    name = "RecipeSteps[` + idx + `].Step_Description" type="hidden" value="` + descr + `" >
+                    <input id="RecipeSteps_` + idx + `__IsOptional"
+                    name = "RecipeSteps[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >`;
+
+                $('form').prepend(elements);
+            })
+
+            return true;
+        })
+
+        $('.customIngredBtn').click(function (ev) {
+            popupHandler.child_open("/Ingredient/Create", "Add Ingredient");
+        })
+
+        var popupHandler = {
+            popupWindow: null,
+            child_open: function (url, name) {
+                if (popupHandler.popupWindow && !popupHandler.popupWindow.closed)
+                    popupHandler.popupWindow.focus();
+                else {
+                    var h = 700;
+                    var w = 1100;
+
+                    var y = window.top.outerHeight / 2 + window.top.screenY - (h / 2);
+                    var x = window.top.outerWidth / 2 + window.top.screenX - (w / 2);
+
+                    var params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no, width=${w},height=${h},top=${y}, left=${x}`;
+
+                    popupHandler.popupWindow = window.open(url, name, params);
+                }
+            }
+        }
+
+        window.onmessage = function (event) {
+            if (popupHandler.popupWindow && event.data) {
+                var resource = event.data;
+                popupHandler.popupWindow.close();
+                var val = JSON.parse(resource);
+
+                var element = `<option value="` + val.value + `">` + val.text + `</option>`;
+                selectIngredientList = selectIngredientList.substring(0, selectIngredientList.length - 9) + element + '</select>';
+                originalSelectIngredientList = originalSelectIngredientList.substring(0, originalSelectIngredientList.length - 9) + element + '</select>';
+
+                $('div[id*="ingredDD"]').each(function(idx, el){
+                    var id = $(el).attr('id');
+                    var originalId = 'originalIngDD' + id.replace('ingredDD', '');
+
+                    $('#' + originalId).append(element);
+                    $(el).replaceWith($("#" + originalId).prop('outerHTML').replaceAll('originalIngDD', 'ingredDD'));
+
+                    $("#" + id).filterMultiSelect({
+                        selectionLimit: 1,
+                    });
+                })
+
+                $('div[id*="ingredDD"]').on('optionselected', function (e) {
+                    var id = $(this).attr('id');
+                    var originalId = 'originalIngDD' + id.replace('ingredDD', '');
+
+                    $('#' + originalId + ' option').removeAttr('selected');
+                    $('#' + originalId + " [value='" + $(this).find('input:checked').val() + "']").attr('selected', true);
+                });
+            }
+        };
+
+        $('div[id*="ingredDD"]').on('optionselected', function (e) {
+            var id = $(this).attr('id');
+            var originalId = 'originalIngDD' + id.replace('ingredDD', '');
+
+            $('#' + originalId + ' option').removeAttr('selected');
+            $('#' + originalId + " [value='" + $(this).find('input:checked').val() + "']").attr('selected', true);
+        });
+
     });
 </script>
 

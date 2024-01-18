@@ -1,0 +1,56 @@
+2024-01-17 16:28:31.4030|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-17 16:28:32.4053|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-17 16:28:35.5018|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-17 16:28:35.6330|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 5
+2024-01-17 16:28:35.7592|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 5
+2024-01-17 16:28:36.8947|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-17 16:28:36.9267|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-17 16:28:36.9267|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-17 16:28:36.9267|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-17 16:28:36.9267|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-17 16:28:36.9618|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-17 16:28:36.9618|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-17 16:28:36.9618|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-17 16:28:36.9618|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 1 recommendations
+2024-01-17 16:29:38.5080|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-17 16:29:38.6691|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-17 16:29:38.6691|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-17 16:29:38.7105|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 5
+2024-01-17 16:29:38.7235|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 5
+2024-01-17 16:29:40.8941|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-17 16:29:40.9455|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-17 16:29:40.9455|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-17 16:29:40.9455|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-17 16:29:40.9575|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-17 16:29:40.9984|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-17 16:29:40.9984|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-17 16:29:40.9984|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-17 16:29:40.9984|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 1 recommendations
+2024-01-17 16:33:23.0585|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-17 16:33:23.4496|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-17 16:33:23.4496|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-17 16:33:23.4815|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 5
+2024-01-17 16:33:23.4970|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 5
+2024-01-17 16:33:26.9787|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-17 16:33:27.0187|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-17 16:33:27.0187|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-17 16:33:27.0187|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-17 16:33:27.0336|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-17 16:33:27.0665|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-17 16:33:27.0665|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-17 16:33:27.0665|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-17 16:33:27.0665|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 1 recommendations
+2024-01-17 16:36:09.5111|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-17 16:36:09.5923|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-17 16:36:09.5923|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-17 16:36:09.6234|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 5
+2024-01-17 16:36:09.6417|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 5
+2024-01-17 16:36:09.6417|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-17 16:36:09.6417|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-17 16:36:09.6596|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-17 16:36:09.6596|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-17 16:36:09.6596|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-17 16:36:09.6596|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-17 16:36:09.6596|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-17 16:36:09.6596|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-17 16:36:09.6596|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 1 recommendations

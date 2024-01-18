@@ -1,18 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using ModelsLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Web;
 
 
 namespace RecipesRealm.ViewModels {
     public class RecipeViewModel {
 
         public long Recipe_ID { get; set; }
+
+        public long? Author_User_ID { get; set; }
 
         [DisplayName("Recipe Name")]
         [Required(ErrorMessage = "A Recipe Name is required")]
@@ -47,8 +44,8 @@ namespace RecipesRealm.ViewModels {
 
         [DisplayName("Tags")]
         public ICollection<long> RecipeTagsIds { get; set; }
-        public ICollection<long> RecipeIngredientsIds { get; set; }
-        public ICollection<long> RecipeNutritionElementsIds { get; set; }
+
+        public bool? Is_Active { get; set; }
 
         //public virtual ICollection<Review> Reviews { get; set; }
 

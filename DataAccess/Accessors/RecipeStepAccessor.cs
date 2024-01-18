@@ -1,46 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Entity;
+﻿using System.Linq;
 using ModelsLibrary;
+using DatabaseRepository;
 
-namespace DataAccess
-{
-    public class RecipeStepAccessor
-    {
-        public static IEnumerable<RecipeStep> GetStepsForRecipe(long id)
-        {
-            using (var context = new DatabaseRepository.RecipesRealmContext())
-            {
-                var steps = context.RecipeSteps.Where(r => r.Recipe_ID == id).ToList();
+namespace DataAccess {
+    public class RecipeStepAccessor : IRecipeStepAccessor {
 
-                return steps;
-            }
+        public RecipesRealmContext context;
+
+        public RecipeStepAccessor(IRecipesRealmContext db) {
+            context = (RecipesRealmContext)db;
         }
 
-        public static void AddRecipeStep(RecipeStep recipeStep) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.RecipeSteps.Add(recipeStep);
-                context.SaveChanges();
-            }
+        public void AddRecipeStep(RecipeStep recipeStep) {
+            context.RecipeSteps.Add(recipeStep);
+            context.SaveChanges();
         }
 
-        public static void DeleteAllStepsForRecipe(long recipeId) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                var recipeIngreds = context.RecipeSteps.Where(r => r.Recipe_ID == recipeId).ToList();
+        public void DeleteAllStepsForRecipe(long recipeId) {
+            var recipeIngreds = context.RecipeSteps.Where(r => r.Recipe_ID == recipeId).ToList();
 
-                context.RecipeSteps.RemoveRange(recipeIngreds);
-                context.SaveChanges();
-            }
+            context.RecipeSteps.RemoveRange(recipeIngreds);
+            context.SaveChanges();
         }
 
-        public static void DeleteRecipeStep(RecipeStep recipeStep) {
-            using (var context = new DatabaseRepository.RecipesRealmContext()) {
-                context.RecipeSteps.Remove(recipeStep);
-                context.SaveChanges();
-            }
+        public void DeleteRecipeStep(RecipeStep recipeStep) {
+            context.RecipeSteps.Remove(recipeStep);
+            context.SaveChanges();
         }
+    }
+
+    public interface IRecipeStepAccessor {
+        void AddRecipeStep(RecipeStep recipeStep);
+
+        void DeleteAllStepsForRecipe(long recipeId);
+
+        void DeleteRecipeStep(RecipeStep recipeStep);
     }
 }

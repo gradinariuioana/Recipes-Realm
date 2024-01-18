@@ -1,0 +1,4 @@
+2024-01-16 22:15:13.9089|ERROR|RecipesRealm.Controllers.BaseController|Error on Creating Recipe|System.NullReferenceException: Object reference not set to an instance of an object.
+   at RecipesRealm.Controllers.RecipeController.Create(RecipeViewModel model) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\RecipesRealm\Controllers\RecipeController.cs:line 90
+2024-01-16 22:15:16.3658|ERROR|RecipesRealm.Controllers.BaseController|Error on Creating Recipe|System.NullReferenceException: Object reference not set to an instance of an object.
+   at RecipesRealm.Controllers.RecipeController.Create(RecipeViewModel model) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\RecipesRealm\Controllers\RecipeController.cs:line 90
