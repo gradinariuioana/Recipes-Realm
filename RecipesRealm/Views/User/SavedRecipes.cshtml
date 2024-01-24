@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<RecipesRealm.ViewModels.RecipeViewModel>
 
 @{
-    ViewBag.Title = "Recommended Recipes";
+    ViewBag.Title = "Saved Recipes";
 }
 
 <section id="recipe-subcat-listing">
@@ -13,7 +13,7 @@
                     <h1>
                         @ViewBag.Title
                     </h1>
-                    <p>Indulge in a world of tailored tastes with the 'Recommendations' section! Elevate your culinary journey as our intelligent system curates a delightful selection of recipes based on your preferences. Discover new flavors, techniques, and inspirations personalized just for you. Let your taste preferences guide you through a unique and delicious exploration of the culinary arts.</p>
+                    <p>Explore the flavors you love at your fingertips! The 'Saved Recipes' section is your digital cookbook, where you can effortlessly bookmark and revisit your favorite recipes. Save time, savor the taste – easily access and organize a collection of tried-and-true culinary gems, ensuring that every dish you love is just a click away.</p>
                 </div>
             </div>
         </div>
@@ -24,9 +24,9 @@
                     foreach (var recipe in Model) {
                         if (k % 3 == 0) {
                             @:<div class="row recipe-row">
-                            }
+                        }
                             <div class="col-4 recipe-col item">
-                                <div class="recipe-block">
+                                <div class="recipe-block">                                    
                                     <div class="recipe-image">
                                         <a id="recipe_@Html.DisplayFor(modelItem => recipe.Recipe_ID)" href="/Recipe/Details/@Html.DisplayFor(modelItem => recipe.Recipe_ID)">
                                             <img src="../../@Html.DisplayFor(modelItem => recipe.Picture_Path)" alt="@Html.DisplayNameFor(model => model.Picture_Path)">
@@ -40,12 +40,12 @@
                                                     if (recipe.RecipeTags.Count > 0) {
                                                         var last = recipe.RecipeTags.Last();
                                                         foreach (var tag in recipe.RecipeTags) {
-                                                            <div class="single-tag">
-                                                                @Html.DisplayFor(modelItem => tag.Tag_Name)
-                                                                @if (tag != last) {
-                                                                    <span>,</span>
-                                                                }
-                                                            </div>
+                                                        <div class="single-tag">
+                                                            @Html.DisplayFor(modelItem => tag.Tag_Name)
+                                                            @if (tag != last) {
+                                                                <span>,</span>
+                                                            }
+                                                        </div>
                                                         }
                                                     }
                                                 }
@@ -83,7 +83,8 @@
                                     </div>
                                 </div>
                             </div>
-                            if (k % 3 == 2) {
+                        if (k % 3 == 2)
+                        {
                             @:</div>
                         }
                         k += 1;

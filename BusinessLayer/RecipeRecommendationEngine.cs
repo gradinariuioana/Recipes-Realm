@@ -55,16 +55,54 @@ namespace BusinessLayer {
 
                 var allRatedRecipesIds = ratingAccessor.GetRatingsForUser(userId).Select(r => r.Recipe_ID);
                 var allSavedRecipesIds = savedRecipeAccessor.GetSavedRecipesForUser(userId).Select(r => r.Recipe_ID);
+                var allUserRecipesIds = recipeAccessor.GetRecipesForUser(userId).Select(r => r.Recipe_ID);
 
-                //Exclude Recipes that have already been Saved or Rated by User
-                var idsToExclude = allRatedRecipesIds.Union(allSavedRecipesIds);
+                //Exclude user Recipes and recipes that have already been Saved or Rated by User
+                var idsToExclude = allRatedRecipesIds.Union(allSavedRecipesIds).Union(allUserRecipesIds);
+
 
                 logger.Debug("User Ratings and Saved Recipes retrieved");
 
-                List<Tag> likedTags;
-                List<Category> likedCategories;
+                logger.Debug("Getting saved recipes for user");
+                //Get Saved Recipes for User
+                var userSavedRecipes = savedRecipeAccessor.GetSavedRecipesForUser(userId);
 
-                for (var score = 5; score > 0; score--) {
+                //Get Tags for Saved Recipes
+                logger.Debug("Getting liked tags based on saved recipes");
+
+                List<Tag> likedTags = savedRecipeAccessor.GetLikedTagsFromSaving(userSavedRecipes);
+
+                foreach (var tag in likedTags) {
+                    //Get Recipes with Liked Tags that have not been rated or saved by User
+                    var recipesWithLikedTags = recipeTagAccessor.GetRecipesForTag(tag.Tag_ID)
+                                                                .Where(r => !idsToExclude.Contains(r.Recipe_ID));
+                    recommendations.AddRange(recipesWithLikedTags);
+
+                    recommendations = recommendations.GroupBy(r => r.Recipe_ID).Select(r => r.FirstOrDefault()).ToList();
+                }
+
+                if (recommendations.Count > numberOfRecommendationsToGenerate) {
+                    return recommendations;
+                }
+
+                //Get Categories for Saved Recipes
+                logger.Debug("Getting liked categories based on saved recipes");
+
+                List<Category> likedCategories = savedRecipeAccessor.GetLikedCategoriesFromSaving(userSavedRecipes);
+
+                foreach (var category in likedCategories) {
+                    //Get Recipes with Liked Categories that have not been rated or saved by User
+                    var recipesWithLikedTags = recipeCategoryAccessor.GetRecipesForCategory(category.Category_ID).Where(r => !idsToExclude.Contains(r.Recipe_ID));
+                    recommendations.AddRange(recipesWithLikedTags);
+
+                    recommendations = recommendations.GroupBy(r => r.Recipe_ID).Select(r => r.FirstOrDefault()).ToList();
+                }
+
+                if (recommendations.Count > numberOfRecommendationsToGenerate) {
+                    return recommendations;
+                }
+
+                for (var score = 5; score > 2; score--) {
 
                     logger.Debug("Getting ratings with score = " + score);
                     //Get Ratings For User starting from 5 to 1
@@ -108,43 +146,12 @@ namespace BusinessLayer {
                     }
                 }
 
-                logger.Debug("Getting saved recipes for user");
-                //Get Saved Recipes for User
-                var userSavedRecipes = savedRecipeAccessor.GetSavedRecipesForUser(userId);
-
-                //Get Tags for Saved Recipes
-                logger.Debug("Getting liked tags based on saved recipes");
-
-                likedTags = savedRecipeAccessor.GetLikedTagsFromSaving(userSavedRecipes);
-
-                foreach (var tag in likedTags) {
-                    //Get Recipes with Liked Tags that have not been rated or saved by User
-                    var recipesWithLikedTags = recipeTagAccessor.GetRecipesForTag(tag.Tag_ID).Where(r => !idsToExclude.Contains(r.Recipe_ID));
-                    recommendations.AddRange(recipesWithLikedTags);
-
-                    recommendations = recommendations.GroupBy(r => r.Recipe_ID).Select(r => r.FirstOrDefault()).ToList();
-                }
-
-                if (recommendations.Count > numberOfRecommendationsToGenerate) {
-                    return recommendations;
-                }
-
-                //Get Categories for Saved Recipes
-                logger.Debug("Getting liked categories based on saved recipes");
-
-                likedCategories = savedRecipeAccessor.GetLikedCategoriesFromSaving(userSavedRecipes);
-
-                foreach (var category in likedCategories) {
-                    //Get Recipes with Liked Categories that have not been rated or saved by User
-                    var recipesWithLikedTags = recipeCategoryAccessor.GetRecipesForCategory(category.Category_ID).Where(r => !idsToExclude.Contains(r.Recipe_ID));
-                    recommendations.AddRange(recipesWithLikedTags);
-
-                    recommendations = recommendations.GroupBy(r => r.Recipe_ID).Select(r => r.FirstOrDefault()).ToList();
-                }
-
-                if (recommendations.Count > numberOfRecommendationsToGenerate) {
-                    return recommendations;
-                }
+                //OPTIONAL: Add other recipes ordered by rating descending
+                /*if (recommendations.Count < numberOfRecommendationsToGenerate) {
+                    idsToExclude = idsToExclude.Union(recommendations.Select(r => r.Recipe_ID).ToList());
+                    var noUserRecommendations = GenerateRecommendationsNoUser(numberOfRecommendationsToGenerate - recommendations.Count, idsToExclude.ToList());
+                    recommendations.AddRange(noUserRecommendations);
+                }*/
 
                 logger.Debug("End Generating Recommendations");
                 logger.Debug("Generated " + recommendations.Count + " recommendations");
@@ -157,6 +164,36 @@ namespace BusinessLayer {
             }
         }
 
+        public List<Recipe> GenerateRecommendationsNoUser(int? number, List<long> idsToExclude = null) {
+            try {
+                logger.Debug("Start Generating No User Recommendations");
+
+                //Get Recipes ordered by rating descending
+                List<Recipe> recommendations = recipeAccessor.GetRecipesList()
+                                               .OrderByDescending(r => ratingAccessor.GetAverageRatingForRecipe(r.Recipe_ID))
+                                               .ToList();
+
+                if (recommendations is null) {
+                    logger.Warn("Recommendation No User List is empty");
+                }
+                else {
+
+                    if (number != null) {
+                        recommendations = recommendations.Where(r => !idsToExclude.Contains(r.Recipe_ID)).ToList();
+                        recommendations = recommendations.Take(number.Value).ToList();
+                    }
+                }
+
+                logger.Debug("End Generating No User Recommendations");
+                logger.Debug("Generated " + recommendations.Count + " recommendations");
+
+                return recommendations;
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Generating Recommendations");
+                return new List<Recipe> { };
+            }
+        }
 
         #region Recipe
 
@@ -256,6 +293,21 @@ namespace BusinessLayer {
             }
             catch (Exception ex) {
                 logger.Error(ex, "Error on Deactivating Recipe");
+            }
+        }
+
+        public void ReactivateRecipe(long id) {
+            try {
+                recipeAccessor.ReactivateRecipe(id);
+
+                string individual_key = "recipes_" + id;
+                string list_key = "recipes_list";
+
+                cacheManager.Remove(individual_key);
+                cacheManager.RemoveByPattern(list_key);
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Reactivating Recipe");
             }
         }
 
@@ -480,13 +532,57 @@ namespace BusinessLayer {
             try {
                 return ratingAccessor.CheckUserCanRate(rating);
             }
-            catch(Exception ex) {
+            catch (Exception ex) {
                 logger.Error(ex, "Error on Checking if User can Rate Recipe in DB");
                 return false;
             }
         }
 
         #endregion Rating
+
+        #region SavedRecipe
+        public bool CheckSavedRecipe(SavedRecipe savedRecipe) {
+            try {
+                return savedRecipeAccessor.CheckUserSavedRecipe(savedRecipe);
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Checking if User has Saved Recipe in DB");
+                return false;
+            }
+        }
+
+        public void SaveRecipe(SavedRecipe savedRecipe) {
+            try {
+                savedRecipe.Saving_Date = DateTime.Now;
+
+                savedRecipeAccessor.SaveRecipe(savedRecipe);
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Adding Saved Recipe to DB");
+            }
+        }
+
+        public void UnSaveRecipe(SavedRecipe savedRecipe) {
+            try {
+                savedRecipeAccessor.UnSaveRecipe(savedRecipe);
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Removing Saved Recipe from DB");
+            }
+        }
+        public List<Recipe> GetUserSavedRecipes(long userId) {
+            try {
+                return savedRecipeAccessor.GetSavedRecipesListForUser(userId);
+
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Getting User Saved Recipes from DB");
+                return new List<Recipe> { };
+            }
+        }
+
+
+        #endregion SavedRecipe
 
         #region Recipe Category
 

@@ -43,7 +43,13 @@ else {
                             <h1>@Html.DisplayFor(model => model.Recipe_Name)</h1>
                             <div class="recipe-user-control-btns d-none position-absolute">
                                 @Html.ActionLink("Edit Recipe", "Edit", "Recipe", new { id = Model.Recipe_ID }, new { @class = "btn btn-info d-block mb-2" })
-                                @Html.ActionLink("Remove Recipe", "Delete", "Recipe", new { id = Model.Recipe_ID }, new { @class = "btn btn-danger d-block" })
+                                @Html.ActionLink("Remove Recipe", "Delete", "Recipe", new { id = Model.Recipe_ID }, new { @class = "btn btn-danger d-block mb-2" })
+                                @{ if (Model.Is_Active != true) {
+                                        using (Html.BeginForm("Reactivate", "Recipe", new { id = Model.Recipe_ID }, FormMethod.Post)) {
+                                            <input type="submit" value="Reactivate Recipe" class="btn-info btn" />
+                                        }
+                                    }
+                                }
                             </div>
                             <div class="row">
                                 <div class="col-12 average-rating">
@@ -54,11 +60,13 @@ else {
                                                 for (var i = 5; i > 0; i--) {
                                                     if (i <= rating) {
                                                         <input type="radio" name="rating" id="rating-@i" checked>
+                                                        <label for="rating-@i" class="fa fa-star checked-star"></label>
                                                     }
                                                     else {
                                                         <input type="radio" name="rating" id="rating-@i">
+                                                        <label for="rating-@i" class="fa fa-star"></label>
                                                     }
-                                                    <label for="rating-@i" class="fa fa-star"></label>
+
                                                 }
                                             }
                                         </div>
@@ -203,13 +211,17 @@ else {
 <script>
     $(document).ready(function () {
         var userId = $('#Author_User_ID').val();
+        var loggedInUserId = "";
 
         if (localStorage.getItem("loggedInUserId") != undefined) {
-            if (userId == localStorage.getItem("loggedInUserId")) {
+            loggedInUserId = localStorage.getItem("loggedInUserId");
+            if (userId == loggedInUserId) {
                 $('.recipe-user-control-btns').removeClass('d-none');
+                $('.save-recipe').hide();
             }
             else {
                 checkUserCanRate();
+                checkUserSavedRecipe();
             }
         }
 
@@ -220,7 +232,7 @@ else {
 
             var model = {
                 Recipe_ID: '@Model.Recipe_ID',
-                User_ID: '@Model.Author_User_ID',
+                User_ID: loggedInUserId,
                 Rating_Value: $('.star-rating input:checked ~ label').length
             };
 
@@ -242,6 +254,8 @@ else {
 
                     if (r.ratingId != -1) {
                         $('.recipe-rating-btn').addClass('fade');
+
+                        $('.rating-value').html('(' + r.averageRating + '/5)');
                     }
                 },
                 error: function (error) {
@@ -259,7 +273,7 @@ else {
 
             var model = {
                 Recipe_ID: '@Model.Recipe_ID',
-                User_ID: '@Model.Author_User_ID'
+                User_ID: loggedInUserId
             };
 
             var modelStr = JSON.stringify(model);
@@ -281,6 +295,82 @@ else {
                     //console.log(canRate);
                     if (d.canRate == true) {
                         $('.recipe-rating-btn').removeClass('d-none');
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+
+            });
+        }
+
+        $('.star-rating label').click(function (ev) {
+            $('.star-rating label.checked-star').removeClass('checked-star');
+        })
+
+        $('.save-recipe').click(function (ev) {
+            var formData = new FormData();
+
+            var model = {
+                Recipe_ID: '@Model.Recipe_ID',
+                User_ID: loggedInUserId
+            };
+
+            var modelStr = JSON.stringify(model);
+
+            formData.append("modelString", modelStr);
+
+            var url = "/SavedRecipe/SaveRecipe";
+
+            if ($('.save-recipe').hasClass('saved')) {
+                url = "/SavedRecipe/UnsaveRecipe";
+            }
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                timeout: 60000,
+                success: function (data) {
+                    $('.save-recipe').toggleClass('saved');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        })
+
+        function checkUserSavedRecipe() {
+            var formData = new FormData();
+
+            var model = {
+                Recipe_ID: '@Model.Recipe_ID',
+                User_ID: loggedInUserId
+            };
+
+            var modelStr = JSON.stringify(model);
+
+            formData.append("modelString", modelStr);
+
+            $.ajax({
+                type: "POST",
+                url: '/SavedRecipe/CheckUserSavedRecipe',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                timeout: 60000,
+                success: function (data) {
+                    var d = JSON.parse(data);
+
+                    //console.log(canRate);
+                    if (d.saved == true) {
+                        $('.save-recipe').addClass('saved');
                     }
                 },
                 error: function (error) {

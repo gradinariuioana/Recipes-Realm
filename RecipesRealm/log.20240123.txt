@@ -1,0 +1,106 @@
+2024-01-23 13:08:00.5228|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-23 13:08:01.5660|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-23 13:08:01.5660|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-23 13:08:01.6325|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-23 13:08:01.6325|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 4
+2024-01-23 13:08:01.7647|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 4
+2024-01-23 13:08:01.7875|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-23 13:08:01.7915|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-23 13:08:01.7915|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-23 13:08:01.7915|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-23 13:08:01.7915|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-23 13:08:01.7915|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-23 13:08:01.7915|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-23 13:08:01.7915|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 1 recommendations
+2024-01-23 13:08:37.1048|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-23 13:08:37.2062|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-23 13:08:37.2062|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-23 13:08:37.2835|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-23 13:08:37.2962|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-23 13:08:37.2962|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-23 13:08:37.3126|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 2
+2024-01-23 13:08:37.3126|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 2
+2024-01-23 13:08:37.3126|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-23 13:08:37.3126|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-23 13:08:37.3859|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-23 13:08:37.3859|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-23 13:08:37.3859|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-23 13:08:37.3859|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 0 recommendations
+2024-01-23 13:08:55.0882|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-23 13:08:55.2595|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-23 13:08:55.2595|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-23 13:08:55.3299|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-23 13:08:55.3366|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 4
+2024-01-23 13:08:55.3539|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 4
+2024-01-23 13:08:55.3699|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-23 13:08:55.3699|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-23 13:08:55.3699|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-23 13:08:55.3839|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-23 13:08:55.3839|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-23 13:08:55.3839|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-23 13:08:55.3839|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-23 13:08:55.3839|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 1 recommendations
+2024-01-23 13:33:57.0050|ERROR|BusinessLayer.RecipeRecommendationEngine|Error on Removing Saved Recipe from DB|System.InvalidOperationException: The object cannot be deleted because it was not found in the ObjectStateManager.
+   at System.Data.Entity.Core.Objects.ObjectContext.DeleteObject(Object entity, EntitySet expectedEntitySet)
+   at System.Data.Entity.DbSet`1.Remove(TEntity entity)
+   at DataAccess.SavedRecipeAccessor.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\DataAccess\Accessors\SavedRecipeAccessor.cs:line 59
+   at BusinessLayer.RecipeRecommendationEngine.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\BusinessLayer\RecipeRecommendationEngine.cs:line 530
+2024-01-23 13:58:05.6070|ERROR|BusinessLayer.RecipeRecommendationEngine|Error on Removing Saved Recipe from DB|System.InvalidOperationException: The object cannot be deleted because it was not found in the ObjectStateManager.
+   at System.Data.Entity.Core.Objects.ObjectContext.DeleteObject(Object entity, EntitySet expectedEntitySet)
+   at System.Data.Entity.DbSet`1.Remove(TEntity entity)
+   at DataAccess.SavedRecipeAccessor.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\DataAccess\Accessors\SavedRecipeAccessor.cs:line 72
+   at BusinessLayer.RecipeRecommendationEngine.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\BusinessLayer\RecipeRecommendationEngine.cs:line 530
+2024-01-23 13:58:17.9951|ERROR|BusinessLayer.RecipeRecommendationEngine|Error on Removing Saved Recipe from DB|System.InvalidOperationException: The object cannot be deleted because it was not found in the ObjectStateManager.
+   at System.Data.Entity.Core.Objects.ObjectContext.DeleteObject(Object entity, EntitySet expectedEntitySet)
+   at System.Data.Entity.DbSet`1.Remove(TEntity entity)
+   at DataAccess.SavedRecipeAccessor.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\DataAccess\Accessors\SavedRecipeAccessor.cs:line 72
+   at BusinessLayer.RecipeRecommendationEngine.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\BusinessLayer\RecipeRecommendationEngine.cs:line 530
+2024-01-23 13:58:29.9664|ERROR|BusinessLayer.RecipeRecommendationEngine|Error on Removing Saved Recipe from DB|System.InvalidOperationException: The object cannot be deleted because it was not found in the ObjectStateManager.
+   at System.Data.Entity.Core.Objects.ObjectContext.DeleteObject(Object entity, EntitySet expectedEntitySet)
+   at System.Data.Entity.DbSet`1.Remove(TEntity entity)
+   at DataAccess.SavedRecipeAccessor.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\DataAccess\Accessors\SavedRecipeAccessor.cs:line 72
+   at BusinessLayer.RecipeRecommendationEngine.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\BusinessLayer\RecipeRecommendationEngine.cs:line 530
+2024-01-23 13:59:22.5830|ERROR|BusinessLayer.RecipeRecommendationEngine|Error on Removing Saved Recipe from DB|System.InvalidOperationException: The object cannot be deleted because it was not found in the ObjectStateManager.
+   at System.Data.Entity.Core.Objects.ObjectContext.DeleteObject(Object entity, EntitySet expectedEntitySet)
+   at System.Data.Entity.DbSet`1.Remove(TEntity entity)
+   at DataAccess.SavedRecipeAccessor.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\DataAccess\Accessors\SavedRecipeAccessor.cs:line 72
+   at BusinessLayer.RecipeRecommendationEngine.UnSaveRecipe(SavedRecipe savedRecipe) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\BusinessLayer\RecipeRecommendationEngine.cs:line 530
+2024-01-23 14:12:40.7689|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating No User Recommendations
+2024-01-23 14:12:41.0511|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating No User Recommendations
+2024-01-23 14:12:41.0511|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 3 recommendations
+2024-01-23 14:13:12.1785|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating No User Recommendations
+2024-01-23 14:13:12.3180|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating No User Recommendations
+2024-01-23 14:13:12.3180|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 3 recommendations
+2024-01-23 14:13:53.8364|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-23 14:13:54.5189|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-23 14:13:54.5189|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-23 14:13:54.5993|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-23 14:13:54.6037|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-23 14:13:54.6037|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-23 14:13:54.6037|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 2
+2024-01-23 14:13:54.6167|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 2
+2024-01-23 14:13:54.6167|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-23 14:13:54.6167|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-23 14:13:54.7358|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-23 14:13:54.7358|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-23 14:13:54.7358|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-23 14:13:54.7358|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 0 recommendations
+2024-01-23 14:34:24.9558|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating Recommendations
+2024-01-23 14:34:25.5866|DEBUG|BusinessLayer.RecipeRecommendationEngine|User Ratings and Saved Recipes retrieved
+2024-01-23 14:34:25.5866|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 5
+2024-01-23 14:34:25.6743|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 4
+2024-01-23 14:34:25.6743|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 3
+2024-01-23 14:34:25.6838|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 2
+2024-01-23 14:34:25.6838|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on ratings with score = 2
+2024-01-23 14:34:25.6838|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on ratings with score = 2
+2024-01-23 14:34:25.6838|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting ratings with score = 1
+2024-01-23 14:34:25.6838|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting saved recipes for user
+2024-01-23 14:34:25.7285|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked tags based on saved recipes
+2024-01-23 14:34:25.7285|DEBUG|BusinessLayer.RecipeRecommendationEngine|Getting liked categories based on saved recipes
+2024-01-23 14:34:25.7285|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating Recommendations
+2024-01-23 14:34:25.7285|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 0 recommendations
+2024-01-23 14:34:25.7285|DEBUG|BusinessLayer.RecipeRecommendationEngine|Start Generating No User Recommendations
+2024-01-23 14:34:25.9093|DEBUG|BusinessLayer.RecipeRecommendationEngine|End Generating No User Recommendations
+2024-01-23 14:34:25.9093|DEBUG|BusinessLayer.RecipeRecommendationEngine|Generated 3 recommendations
+2024-01-23 15:00:08.4334|ERROR|RecipesRealm.Controllers.BaseController|Error on Editing Recipe|System.NullReferenceException: Object reference not set to an instance of an object.
+   at RecipesRealm.Controllers.RecipeController.Edit(Int64 id, RecipeViewModel model) in D:\University\Master\Anul 1 Sem 1\PPAW\Project\RecipesRealm\RecipesRealm\Controllers\RecipeController.cs:line 292

@@ -288,6 +288,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\SavedRecipeController.cs" />
     <Compile Include="Controllers\RatingController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\IngredientController.cs" />
@@ -301,6 +302,7 @@
     <Compile Include="MappingProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\IngredientViewModel.cs" />
+    <Compile Include="ViewModels\SavedRecipeViewModel.cs" />
     <Compile Include="ViewModels\RecipeViewModel.cs" />
     <Compile Include="ViewModels\NutritionElementViewModel.cs" />
     <Compile Include="ViewModels\RecipeStepViewModel.cs" />
@@ -463,6 +465,7 @@
     <Content Include="Views\Category\Details.cshtml" />
     <Content Include="Views\Recommendation\Index.cshtml" />
     <Content Include="Views\User\MyRecipes.cshtml" />
+    <Content Include="Views\User\SavedRecipes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

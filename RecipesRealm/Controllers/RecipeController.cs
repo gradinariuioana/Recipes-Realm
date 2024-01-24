@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using BusinessLayer.Interfaces;
+using System.IO;
+using System.Web.Hosting;
+using System.Web;
 
 namespace RecipesRealm.Controllers {
     public class RecipeController : BaseController {
@@ -19,7 +22,7 @@ namespace RecipesRealm.Controllers {
                 IEnumerable<Recipe> recipes = recipeRecommendationEngine.GetRecipesList();
 
                 if (recipes is null) {
-                    logger.Error("Recipes could not be retrieved");
+                    logger.Warn("Recipes List Empty");
                 }
 
                 foreach (Recipe r in recipes)
@@ -83,12 +86,30 @@ namespace RecipesRealm.Controllers {
             }
         }
 
+        [Microsoft.AspNetCore.Mvc.Produces("application/json")]
+        public string UploadPhoto(HttpPostedFileBase file) {
+            try {
+                if (file != null) {
+                    var path = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, "Content/Images", file.FileName);
+                    file.SaveAs(path);
+
+                    return "/Content/Images/" + file.FileName;
+                }
+                return "";
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Uploading Recipe file");
+                return ex.ToString();
+            }
+        }
+
         [HttpPost]
         public ActionResult Create(RecipeViewModel model) {
             try {
                 if (ModelState.IsValid) {
                     Recipe recipe = AutoMapperConfig.Mapper.Map<Recipe>(model);
 
+                    recipe.Is_Active = true;
                     recipe.Creation_Date = DateTime.Now;
 
                     ICollection<RecipeTag> recipeTags = new List<RecipeTag>();
@@ -226,58 +247,48 @@ namespace RecipesRealm.Controllers {
                     Recipe recipe = AutoMapperConfig.Mapper.Map<Recipe>(model);
                     recipeRecommendationEngine.UpdateRecipe(recipe);
 
-
                     //update tags
-                    var oldTagsIds = recipeRecommendationEngine.GetTagsIdsForRecipe(id);
+                    recipeRecommendationEngine.DeleteAllTagsForRecipe(id);
 
-                    //remove old tags that are not in the model anymore
-                    var recipeTagsToRemove = oldTagsIds.Where(i => !model.RecipeTagsIds.Contains(i));
-                    foreach (var tagId in recipeTagsToRemove) {
-                        recipeRecommendationEngine.DeleteRecipeTag(tagId);
-                    }
+                    if (model.RecipeTagsIds != null) {
+                        foreach (var tagId in model.RecipeTagsIds) {
+                            var recipeTag = new RecipeTag {
+                                Recipe_ID = id,
+                                Tag_ID = tagId
+                            };
 
-                    //add new tags that were not in the old model
-                    var tagsToAdd = model.RecipeTagsIds.Where(i => !oldTagsIds.Contains(i));
-                    foreach (var tagId in tagsToAdd) {
-                        var recipeTag = new RecipeTag {
-                            Recipe_ID = id,
-                            Tag_ID = tagId
-                        };
-
-                        recipeRecommendationEngine.AddRecipeTag(recipeTag);
+                            recipeRecommendationEngine.AddRecipeTag(recipeTag);
+                        }
                     }
 
                     //update categories
-                    var oldCategoriesIds = recipeRecommendationEngine.GetCategoriesIdsForRecipe(id);
+                    recipeRecommendationEngine.DeleteAllCategoriesForRecipe(id);
 
-                    //remove old categories that are not in the model anymore
-                    var recipeCategoriesToRemove = oldCategoriesIds.Where(i => !model.RecipeCategoriesIds.Contains(i));
-                    foreach (var categoryId in recipeCategoriesToRemove) {
-                        recipeRecommendationEngine.DeleteRecipeCategory(categoryId);
-                    }
+                    if (model.RecipeCategoriesIds != null) {
+                        foreach (var categoryId in model.RecipeCategoriesIds) {
+                            var recipeCategory = new RecipeCategory {
+                                Recipe_ID = id,
+                                Category_ID = categoryId
+                            };
 
-                    //add new categories that were not in the old model
-                    var categoriesToAdd = model.RecipeCategoriesIds.Where(i => !oldCategoriesIds.Contains(i));
-                    foreach (var categoryId in categoriesToAdd) {
-                        var recipeCategory = new RecipeCategory {
-                            Recipe_ID = id,
-                            Category_ID = categoryId
-                        };
-
-                        recipeRecommendationEngine.AddRecipeCategory(recipeCategory);
+                            recipeRecommendationEngine.AddRecipeCategory(recipeCategory);
+                        }
                     }
 
                     //update nutritionElements
-                    recipeRecommendationEngine.DeleteAllNutritionElementsForRecipe(id);
-                    foreach (var ne in model.RecipeNutritionElements) {
-                        var recipeNE = new RecipeNutritionElement {
-                            Recipe_ID = id,
-                            NutritionElement_ID = ne.NutritionElement_ID,
-                            Value = ne.Value,
-                            Measurement_Unit = ne.Measurement_Unit
-                        };
 
-                        recipeRecommendationEngine.AddRecipeNutritionElement(recipeNE);
+                    recipeRecommendationEngine.DeleteAllNutritionElementsForRecipe(id);
+                    if (model.RecipeNutritionElements != null) {
+                        foreach (var ne in model.RecipeNutritionElements) {
+                            var recipeNE = new RecipeNutritionElement {
+                                Recipe_ID = id,
+                                NutritionElement_ID = ne.NutritionElement_ID,
+                                Value = ne.Value,
+                                Measurement_Unit = ne.Measurement_Unit
+                            };
+
+                            recipeRecommendationEngine.AddRecipeNutritionElement(recipeNE);
+                        }
                     }
 
 
@@ -389,6 +400,21 @@ namespace RecipesRealm.Controllers {
         }
 
         #endregion Delete
+
+        [HttpPost]
+
+        public ActionResult Reactivate(long id) {
+            try {
+                recipeRecommendationEngine.ReactivateRecipe(id);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Error on Reactivating Recipe");
+                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+            }
+
+        }
 
     }
 }

@@ -44,12 +44,14 @@ namespace BusinessLayer.Interfaces {
         void DeleteAllCategoriesForRecipe(long recipeId);
 
         void DeactivateRecipe(long id);
+        void ReactivateRecipe(long id);
 
         string GetUserName(long id);
 
         long GetAverageRatingForRecipe(long recipeId);
 
         List<Recipe> GenerateRecommendations(long userId);
+        List<Recipe> GenerateRecommendationsNoUser(int? number, List<long> idsToExclude = null);
 
         User CheckUserForLogin(User user);
 
@@ -60,10 +62,16 @@ namespace BusinessLayer.Interfaces {
         bool CheckIngredientExists(string ingredient);
 
         List<Recipe> GetUserRecipes(long userId);
+        List<Recipe> GetUserSavedRecipes(long userId);
 
         long AddRating(Rating rating);
 
         bool CheckUserCanRate(Rating rating);
+
+        bool CheckSavedRecipe(SavedRecipe savedRecipe);
+
+        void SaveRecipe(SavedRecipe savedRecipe);
+        void UnSaveRecipe(SavedRecipe savedRecipe);
 
     }
 }

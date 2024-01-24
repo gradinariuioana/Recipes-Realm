@@ -22,6 +22,19 @@ namespace DataAccess {
             return savedRecipes;
         }
 
+        public List<Recipe> GetSavedRecipesListForUser(long userId) {
+            var savedRecipes = context.SavedRecipes.Where(r => r.User_ID == userId).Include(r => r.Recipe).Select(s => s.Recipe)
+                                    .Where(r => r.Is_Active == true)
+                                    .Include("RecipeIngredients.Ingredient")
+                                    .Include(r => r.RecipeSteps)
+                                    .Include("RecipeCategories.Category")
+                                    .Include("RecipeTags.Tag")
+                                    .Include(r => r.User)
+                                    .Include("RecipeNutritionElements.NutritionElement")
+                                    .ToList();
+            return savedRecipes;
+        }
+
         public List<Tag> GetLikedTagsFromSaving(List<SavedRecipe> savedRecipes) {
             List<Tag> likedTags = new List<Tag>();
 
@@ -43,6 +56,26 @@ namespace DataAccess {
             }
             return likedCategories;
         }
+
+        public bool CheckUserSavedRecipe(SavedRecipe savedRecipe) {
+            var r = context.SavedRecipes.FirstOrDefault(re => re.Recipe_ID == savedRecipe.Recipe_ID && re.User_ID == savedRecipe.User_ID);
+
+            return r != null;
+        }
+
+        public void SaveRecipe(SavedRecipe savedRecipe) {
+            context.SavedRecipes.Add(savedRecipe);
+            context.SaveChanges();
+        }
+
+        public void UnSaveRecipe(SavedRecipe savedRecipe) {
+            var r = context.SavedRecipes.FirstOrDefault(s => s.Recipe_ID == savedRecipe.Recipe_ID && s.User_ID == savedRecipe.User_ID);
+            if (r != null) {
+
+                context.SavedRecipes.Remove(r);
+                context.SaveChanges();
+            }
+        }
     }
 
     public interface ISavedRecipeAccessor {
@@ -53,5 +86,13 @@ namespace DataAccess {
         List<Tag> GetLikedTagsFromSaving(List<SavedRecipe> savedRecipes);
 
         List<Category> GetLikedCategoriesFromSaving(List<SavedRecipe> savedRecipes);
+
+        bool CheckUserSavedRecipe(SavedRecipe savedRecipe);
+
+        void SaveRecipe(SavedRecipe savedRecipe);
+        void UnSaveRecipe(SavedRecipe savedRecipe);
+        List<Recipe> GetSavedRecipesListForUser(long userId);
+
+
     }
 }

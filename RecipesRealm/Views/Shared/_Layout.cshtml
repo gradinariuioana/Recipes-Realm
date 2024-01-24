@@ -70,11 +70,17 @@
                                 <li class="logged-in d-none has-submenu">
                                     <p></p>
                                     <ul id="dropdown" class="submenu submenu-user row">
-                                        <li class="submenu-heading col-6 myRecipesLink">
+                                        <li class="submenu-heading w-auto mx-4">
+                                            @Html.ActionLink("Add Recipe", "Create", "Recipe")
+                                        </li>
+                                        <li class="submenu-heading w-auto mx-4 myRecipesLink">
                                             @Html.ActionLink("My Recipes", "MyRecipes", "User")
                                         </li>
-                                        <li class="submenu-heading col-6">
-                                            @Html.ActionLink("Add Recipe", "Create", "Recipe")
+                                        <li class="submenu-heading w-auto mx-4 savedRecipesLink">
+                                            @Html.ActionLink("Saved Recipes", "SavedRecipes", "User")
+                                        </li>
+                                        <li class="submenu-heading w-auto mx-4">
+                                            <a onclick="$.fn.logOut();" href="#">Log out</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -103,7 +109,7 @@
                             <label for="login_Password">Password</label>
                             <input type="password" placeholder="Password" id="login_Password" class="form-control mb-2" />
                             <div class="text-danger invisible mb-3" id="login-error">* Email or Password is incorrect</div>
-                            <input type="submit" value="Login" class="btn form-control mx-auto mb-3" id="loginBtn" />
+                            <input type="submit" value="Login" class="btn form-control mb-3" id="loginBtn" />
                         </form>
                         <p>Not a user? <a href="#" onclick="$.fn.showSignUp();">Sign up</a> instead</p>
                     </div>
@@ -116,7 +122,7 @@
                             <label for="signUp_Password">Password</label>
                             <input type="password" placeholder="Password" id="signUp_Password" class="form-control mb-2" />
                             <div class="text-danger invisible mb-3" id="signup-error">* Signing up error</div>
-                            <input type="submit" value="Sign Up" class="btn form-control mx-auto mb-3" id="signUpBtn" />
+                            <input type="submit" value="Sign Up" class="btn form-control mb-3" id="signUpBtn" />
                         </form>
                         <p>Already a user? <a href="#" onclick="$.fn.showLogin();">Login</a> instead</p>
                     </div>
@@ -162,6 +168,13 @@
         $('#loginModal').modal('show');
     }
 
+    $.fn.logOut = function () {
+        localStorage.removeItem("loggedInUserName");
+        localStorage.removeItem("loggedInUserId");
+
+        window.location = '/';
+    }
+
     $(document).ready(function () {
 
         if (localStorage.getItem("loggedInUserName") != undefined) {
@@ -181,6 +194,11 @@
             strs = $('.myRecipesLink a').attr('href').split('/MyRecipes');
             if (strs[1].length < 2) {
                 $('.myRecipesLink a').attr('href', $('.myRecipesLink a').attr('href') + '/' + localStorage.getItem("loggedInUserId"));
+            }
+
+            strs = $('.savedRecipesLink a').attr('href').split('/SavedRecipes');
+            if (strs[1].length < 2) {
+                $('.savedRecipesLink a').attr('href', $('.savedRecipesLink a').attr('href') + '/' + localStorage.getItem("loggedInUserId"));
             }
         }
 
@@ -214,7 +232,7 @@
                         localStorage.setItem("loggedInUserName", u.userName);
                         localStorage.setItem("loggedInUserId", u.userId);
 
-                        window.location.reload();
+                        window.location = '/';
                     }
                     else {
                         $('#login-error').removeClass('invisible');
@@ -262,7 +280,7 @@
                         localStorage.setItem("loggedInUserName", u.userName);
                         localStorage.setItem("loggedInUserId", u.userId);
 
-                        window.location.reload();
+                        window.location = '/';
                     }
                     else {
                         if (u.EmailExists != undefined) {

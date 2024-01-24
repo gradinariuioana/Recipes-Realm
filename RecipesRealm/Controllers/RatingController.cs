@@ -22,7 +22,7 @@ namespace RecipesRealm.Controllers {
 
                 var ratId = recipeRecommendationEngine.AddRating(rating);
 
-                return JsonConvert.SerializeObject(new { ratingId = ratId });
+                return JsonConvert.SerializeObject(new { ratingId = ratId, averageRating = recipeRecommendationEngine.GetAverageRatingForRecipe(rating.Recipe_ID) });
             }
             catch (Exception ex) {
                 logger.Error(ex, "Error on Adding Rating");

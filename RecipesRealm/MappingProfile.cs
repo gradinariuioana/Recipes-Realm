@@ -63,6 +63,7 @@ namespace RecipesRealm
                 .ForMember(uVM => uVM.Password, opt => opt.MapFrom<PasswordConverter>());
 
             CreateMap<RatingViewModel, Rating>();
+            CreateMap<SavedRecipeViewModel, SavedRecipe>();
         }
         public class RecipeTagConverter : IValueResolver<Recipe, RecipeViewModel, ICollection<TagViewModel>>
         {

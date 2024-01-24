@@ -15,13 +15,16 @@
                         <div class="row top-section">
                             <div class="col-5 recipe-header-left">
                                 <div class="hero-wrapper">
+                                    @Html.LabelFor(model => model.Picture_Path)
+                                    <input type="file" id="photoInput" class="form-control mb-3 h-auto" />
+
                                     <img src="../../@Html.DisplayFor(model => model.Picture_Path)" alt="@Html.DisplayNameFor(model => model.Picture_Path)">
                                 </div>
                                 <div class="recipe-user-controls">
                                 </div>
                                 <div class="recipe-ingredients">
                                     <div class="ingredients-heading">
-                                        <h2>Ingredients &nbsp; <span id="recipeIngredientsError" class="error invisible text-danger small">Please add at least one ingredient</span></h2>                                        
+                                        <h2>Ingredients &nbsp; <span id="recipeIngredientsError" class="error invisible text-danger small">Please add at least one ingredient</span></h2>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 ingredient-wrapper">
@@ -245,7 +248,7 @@
                                 <div class="recipe-instructions">
                                     <div class="instructions-wrapper">
                                         <div class="method-p">
-                                            <h2>Method &nbsp; <span id="recipeStepsError" class="invisible error text-danger small">Please add at least one step</span></h2>                                            
+                                            <h2>Method &nbsp; <span id="recipeStepsError" class="invisible error text-danger small">Please add at least one step</span></h2>
                                             <ol class="">
                                                 @foreach (var step in Model.RecipeSteps) {
                                                     <li class="step-wrapper">
@@ -547,73 +550,170 @@
                 return false;
             }
 
-            $('.ingred-list li').each(function (idx, el) {
-                var id = $(el).find('.filter-multi-select input:checked').val();
-                var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
-                var quantity = $(el).find('#ingred_Quantity').val();
-                var unit = $(el).find('#ingred_Measurement_Unit').val();
-                //debugger;
-                var opt = $(el).find('#ingred_IsOptional').is(":checked");
-                var otherInfo = $(el).find('#ingred_Other_Info').val();
+            if ($("#photoInput")[0].files[0] != undefined) {
 
-                var elements = `<input id="RecipeIngredients_` + idx + `__Ingredient_ID"
-                                name = "RecipeIngredients[` + idx + `].Ingredient_ID" type="hidden" value="` + id + `" >
-                                <input id="RecipeIngredients_` + idx + `__Recipe_ID"
-                                name = "RecipeIngredients[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
-                                <input id="RecipeIngredients_` + idx + `__Ingredient_Name"
-                                name = "RecipeIngredients[` + idx + `].Ingredient_Name" type="hidden" value="` + name + `" >
-                                <input id="RecipeIngredients_` + idx + `__Quantity"
-                                name = "RecipeIngredients[` + idx + `].Quantity" type="hidden" value="` + quantity + `" >
-                                <input id="RecipeIngredients_` + idx + `__Measurement_Unit"
-                                name = "RecipeIngredients[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >
-                                <input id="RecipeIngredients_` + idx + `__IsOptional"
-                                name = "RecipeIngredients[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >
-                                <input id="RecipeIngredients_` + idx + `__Other_Info"
-                                name = "RecipeIngredients[` + idx + `].Other_Info" type="hidden" value="` + otherInfo + `" >`;
-                $('form').prepend(elements);
-            })
+                var formData = new FormData();
 
-            $('.nutrition-expanded ol li').each(function (idx, el) {
-                var id = $(el).find('.filter-multi-select input:checked').val();
-                var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
-                var value = $(el).find('#nutritionElement_Value').val();
-                var unit = $(el).find('#nutritionElement_Measurement_Unit').val();
+                formData.append('file', $("#photoInput")[0].files[0]);
 
-                var elements = `<input id="RecipeNutritionElements_` + idx + `__NutritionElement_ID"
-                    name = "RecipeNutritionElements[` + idx + `].NutritionElement_ID" type="hidden" value="` + id + `" >
-                    <input id="RecipeNutritionElements_` + idx + `__Recipe_ID"
-                    name = "RecipeNutritionElements[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
-                    <input id="RecipeNutritionElements_` + idx + `__Element_Name"
-                    name = "RecipeNutritionElements[` + idx + `].Element_Name" type="hidden" value="` + name + `" >
-                    <input id="RecipeNutritionElements_` + idx + `__Value"
-                    name = "RecipeNutritionElements[` + idx + `].Value" type="hidden" value="` + value + `" >
-                    <input id="RecipeNutritionElements_` + idx + `__Measurement_Unit"
-                    name = "RecipeNutritionElements[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >`;
+                $.ajax({
+                    type: "POST",
+                    url: "/Recipe/UploadPhoto",
+                    contentType: false,
+                    processData: false,
+                    async: false,
+                    timeout: 60000,
+                    data: formData,
+                    success: function (response) {
+                        console.log(response);
 
-                $('form').prepend(elements);
-            })
+                        $('form').append("<input id='Picture_Path' name='Picture_Path' type='hidden' value='" + response + "'/>");
 
-            $('.instructions-wrapper ol li').each(function (idx, el) {
-                var title = $(el).find('#step_Step_Title').val();
-                var descr = $(el).find('#step_Step_Description').val();
-                var opt = $(el).find('#step_IsOptional').is(":checked");
+                        $('.ingred-list li').each(function (idx, el) {
+                            var id = $(el).find('.filter-multi-select input:checked').val();
+                            var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
+                            var quantity = $(el).find('#ingred_Quantity').val();
+                            var unit = $(el).find('#ingred_Measurement_Unit').val();
+                            //debugger;
+                            var opt = $(el).find('#ingred_IsOptional').is(":checked");
+                            var otherInfo = $(el).find('#ingred_Other_Info').val();
 
-                var elements = `<input id="RecipeSteps_` + idx + `__Step_Number"
-                    name = "RecipeSteps_[` + idx + `].Step_Number" type="hidden" value="` + (idx + 1) + `" >
-                    <input id="RecipeSteps_` + idx + `__Recipe_ID"
-                    name = "RecipeSteps_[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
-                    <input id="RecipeSteps_` + idx + `__Step_Title"
-                    name = "RecipeSteps[` + idx + `].Step_Title" type="hidden" value="` + title + `" >
-                    <input id="RecipeSteps_` + idx + `__Step_Description"
-                    name = "RecipeSteps[` + idx + `].Step_Description" type="hidden" value="` + descr + `" >
-                    <input id="RecipeSteps_` + idx + `__IsOptional"
-                    name = "RecipeSteps[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >`;
+                            var elements = `<input id="RecipeIngredients_` + idx + `__Ingredient_ID"
+                                            name = "RecipeIngredients[` + idx + `].Ingredient_ID" type="hidden" value="` + id + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Recipe_ID"
+                                            name = "RecipeIngredients[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Ingredient_Name"
+                                            name = "RecipeIngredients[` + idx + `].Ingredient_Name" type="hidden" value="` + name + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Quantity"
+                                            name = "RecipeIngredients[` + idx + `].Quantity" type="hidden" value="` + quantity + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Measurement_Unit"
+                                            name = "RecipeIngredients[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >
+                                            <input id="RecipeIngredients_` + idx + `__IsOptional"
+                                            name = "RecipeIngredients[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Other_Info"
+                                            name = "RecipeIngredients[` + idx + `].Other_Info" type="hidden" value="` + otherInfo + `" >`;
+                            $('form').prepend(elements);
+                        })
 
-                $('form').prepend(elements);
-            })
+                        $('.nutrition-expanded ol li').each(function (idx, el) {
+                            var id = $(el).find('.filter-multi-select input:checked').val();
+                            var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
+                            var value = $(el).find('#nutritionElement_Value').val();
+                            var unit = $(el).find('#nutritionElement_Measurement_Unit').val();
 
-            return true;
-        })
+                            var elements = `<input id="RecipeNutritionElements_` + idx + `__NutritionElement_ID"
+                                name = "RecipeNutritionElements[` + idx + `].NutritionElement_ID" type="hidden" value="` + id + `" >
+                                <input id="RecipeNutritionElements_` + idx + `__Recipe_ID"
+                                name = "RecipeNutritionElements[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                                <input id="RecipeNutritionElements_` + idx + `__Element_Name"
+                                name = "RecipeNutritionElements[` + idx + `].Element_Name" type="hidden" value="` + name + `" >
+                                <input id="RecipeNutritionElements_` + idx + `__Value"
+                                name = "RecipeNutritionElements[` + idx + `].Value" type="hidden" value="` + value + `" >
+                                <input id="RecipeNutritionElements_` + idx + `__Measurement_Unit"
+                                name = "RecipeNutritionElements[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >`;
+
+                            $('form').prepend(elements);
+                        })
+
+                        $('.instructions-wrapper ol li').each(function (idx, el) {
+                            var title = $(el).find('#step_Step_Title').val();
+                            var descr = $(el).find('#step_Step_Description').val();
+                            var opt = $(el).find('#step_IsOptional').is(":checked");
+
+                            var elements = `<input id="RecipeSteps_` + idx + `__Step_Number"
+                                            name = "RecipeSteps[` + idx + `].Step_Number" type="hidden" value="` + (idx + 1) + `" >
+                                <input id="RecipeSteps_` + idx + `__Recipe_ID"
+                                name = "RecipeSteps[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                                <input id="RecipeSteps_` + idx + `__Step_Title"
+                                name = "RecipeSteps[` + idx + `].Step_Title" type="hidden" value="` + title + `" >
+                                <input id="RecipeSteps_` + idx + `__Step_Description"
+                                name = "RecipeSteps[` + idx + `].Step_Description" type="hidden" value="` + descr + `" >
+                                <input id="RecipeSteps_` + idx + `__IsOptional"
+                                name = "RecipeSteps[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >`;
+
+                            $('form').prepend(elements);
+                        })
+
+                        return true;
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        return false;
+                    }
+                });
+            }
+            else {
+                $('form').append("<input id='Picture_Path' name='Picture_Path' type='hidden' value='@Model.Picture_Path'/>");
+
+                $('.ingred-list li').each(function (idx, el) {
+                    var id = $(el).find('.filter-multi-select input:checked').val();
+                    var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
+                    var quantity = $(el).find('#ingred_Quantity').val();
+                    var unit = $(el).find('#ingred_Measurement_Unit').val();
+                    //debugger;
+                    var opt = $(el).find('#ingred_IsOptional').is(":checked");
+                    var otherInfo = $(el).find('#ingred_Other_Info').val();
+
+                    var elements = `<input id="RecipeIngredients_` + idx + `__Ingredient_ID"
+                                            name = "RecipeIngredients[` + idx + `].Ingredient_ID" type="hidden" value="` + id + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Recipe_ID"
+                                            name = "RecipeIngredients[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Ingredient_Name"
+                                            name = "RecipeIngredients[` + idx + `].Ingredient_Name" type="hidden" value="` + name + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Quantity"
+                                            name = "RecipeIngredients[` + idx + `].Quantity" type="hidden" value="` + quantity + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Measurement_Unit"
+                                            name = "RecipeIngredients[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >
+                                            <input id="RecipeIngredients_` + idx + `__IsOptional"
+                                            name = "RecipeIngredients[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >
+                                            <input id="RecipeIngredients_` + idx + `__Other_Info"
+                                            name = "RecipeIngredients[` + idx + `].Other_Info" type="hidden" value="` + otherInfo + `" >`;
+                    $('form').prepend(elements);
+                })
+
+                $('.nutrition-expanded ol li').each(function (idx, el) {
+                    var id = $(el).find('.filter-multi-select input:checked').val();
+                    var name = $(el).find('.filter-multi-select input:checked').closest('.dropdown-item').find('label').text();
+                    var value = $(el).find('#nutritionElement_Value').val();
+                    var unit = $(el).find('#nutritionElement_Measurement_Unit').val();
+
+                    var elements = `<input id="RecipeNutritionElements_` + idx + `__NutritionElement_ID"
+                                name = "RecipeNutritionElements[` + idx + `].NutritionElement_ID" type="hidden" value="` + id + `" >
+                                <input id="RecipeNutritionElements_` + idx + `__Recipe_ID"
+                                name = "RecipeNutritionElements[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                                <input id="RecipeNutritionElements_` + idx + `__Element_Name"
+                                name = "RecipeNutritionElements[` + idx + `].Element_Name" type="hidden" value="` + name + `" >
+                                <input id="RecipeNutritionElements_` + idx + `__Value"
+                                name = "RecipeNutritionElements[` + idx + `].Value" type="hidden" value="` + value + `" >
+                                <input id="RecipeNutritionElements_` + idx + `__Measurement_Unit"
+                                name = "RecipeNutritionElements[` + idx + `].Measurement_Unit" type="hidden" value="` + unit + `" >`;
+
+                    $('form').prepend(elements);
+                })
+
+                $('.instructions-wrapper ol li').each(function (idx, el) {
+                    var title = $(el).find('#step_Step_Title').val();
+                    var descr = $(el).find('#step_Step_Description').val();
+                    var opt = $(el).find('#step_IsOptional').is(":checked");
+
+                    var elements = `<input id="RecipeSteps_` + idx + `__Step_Number"
+                                     name = "RecipeSteps[` + idx + `].Step_Number" type="hidden" value="` + (idx + 1) + `" >
+                         <input id="RecipeSteps_` + idx + `__Recipe_ID"
+                         name = "RecipeSteps[` + idx + `].Recipe_ID" type="hidden" value="` + recipeId + `" >
+                         <input id="RecipeSteps_` + idx + `__Step_Title"
+                         name = "RecipeSteps[` + idx + `].Step_Title" type="hidden" value="` + title + `" >
+                         <input id="RecipeSteps_` + idx + `__Step_Description"
+                         name = "RecipeSteps[` + idx + `].Step_Description" type="hidden" value="` + descr + `" >
+                         <input id="RecipeSteps_` + idx + `__IsOptional"
+                         name = "RecipeSteps[` + idx + `].IsOptional" type="hidden" value="` + opt + `" >`;
+
+                    $('form').prepend(elements);
+                })
+
+                return true;
+            }
+            //return false;
+        });
 
         $('.customIngredBtn').click(function (ev) {
             popupHandler.child_open("/Ingredient/Create", "Add Ingredient");

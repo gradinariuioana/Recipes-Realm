@@ -66,7 +66,7 @@ namespace RecipesRealm.Controllers {
                 IEnumerable<Recipe> recipes = recipeRecommendationEngine.GetUserRecipes(id);
 
                 if (recipes is null) {
-                    logger.Error("User Recipes could not be retrieved");
+                    logger.Warn("User Recipes List Empty");
                 }
 
                 foreach (Recipe r in recipes)
@@ -77,6 +77,27 @@ namespace RecipesRealm.Controllers {
 
             catch (Exception ex) {
                 logger.Error(ex, "Error on getting User Recipes");
+                return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
+            }
+        }
+
+        public System.Web.Mvc.ActionResult SavedRecipes(long id) {
+            try {
+                IEnumerable<RecipeViewModel> recipeViewModels = new List<RecipeViewModel>();
+                IEnumerable<Recipe> recipes = recipeRecommendationEngine.GetUserSavedRecipes(id);
+
+                if (recipes is null) {
+                    logger.Warn("User Saved Recipes List Empty");
+                }
+
+                foreach (Recipe r in recipes)
+                    recipeViewModels = recipeViewModels.Append(AutoMapperConfig.Mapper.Map<RecipeViewModel>(r));
+
+                return View(recipeViewModels);
+            }
+
+            catch (Exception ex) {
+                logger.Error(ex, "Error on getting User Saved Recipes");
                 return new HttpStatusCodeResult(StatusCodes.Status500InternalServerError, ex.ToString());
             }
         }

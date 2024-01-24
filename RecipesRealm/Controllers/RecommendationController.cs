@@ -25,6 +25,12 @@ namespace RecipesRealm.Controllers {
                         recipeViewModels = recipeViewModels.Append(AutoMapperConfig.Mapper.Map<RecipeViewModel>(r));
 
                 }
+                else {
+                    IEnumerable<Recipe> recipes = recipeRecommendationEngine.GenerateRecommendationsNoUser(null);
+
+                    foreach (Recipe r in recipes)
+                        recipeViewModels = recipeViewModels.Append(AutoMapperConfig.Mapper.Map<RecipeViewModel>(r));
+                }
 
                 return View(recipeViewModels);
             }

@@ -36,7 +36,9 @@ namespace DataAccess {
         public void DeleteRecipeTag(long id) {
             var recipeTag = context.RecipeTags.FirstOrDefault(r => r.ID == id);
 
-            if (recipeTag != null) context.RecipeTags.Remove(recipeTag);
+            if (recipeTag != null) {
+                context.RecipeTags.Remove(recipeTag);
+            }
             context.SaveChanges();
         }
 

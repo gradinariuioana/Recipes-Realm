@@ -25,7 +25,7 @@ namespace DataAccess {
         }
 
         public Recipe GetRecipe(long id) {
-            var recipe = context.Recipes.Where(r => r.Is_Active == true).Include("RecipeIngredients.Ingredient")
+            var recipe = context.Recipes.Include("RecipeIngredients.Ingredient")
                 .Include(r => r.RecipeSteps)
                 .Include("RecipeCategories.Category")
                 .Include("RecipeTags.Tag")
@@ -49,6 +49,7 @@ namespace DataAccess {
             oldRecipe.Cooking_Time = recipe.Cooking_Time;
             oldRecipe.Difficulty_Level = recipe.Difficulty_Level;
             oldRecipe.RecipeSteps = recipe.RecipeSteps;
+            oldRecipe.Picture_Path = recipe.Picture_Path;
 
             context.SaveChanges();
         }
@@ -59,6 +60,13 @@ namespace DataAccess {
 
             context.SaveChanges();
         }
+        public void ReactivateRecipe(long id) {
+            Recipe recipe = context.Recipes.FirstOrDefault(r => r.Recipe_ID == id);
+            recipe.Is_Active = true;
+
+            context.SaveChanges();
+        }
+
 
         public void DeleteRecipe(long id) {
             Recipe recipe = context.Recipes.FirstOrDefault(r => r.Recipe_ID == id);
@@ -68,7 +76,7 @@ namespace DataAccess {
         }
 
         public List<Recipe> GetRecipesForUser(long userId) {
-            var recipes = context.Recipes.Where(r => r.Is_Active == true && r.Author_User_ID == userId).Include("RecipeIngredients.Ingredient")
+            var recipes = context.Recipes.Where(r => r.Author_User_ID == userId).Include("RecipeIngredients.Ingredient")
                 .Include(r => r.RecipeSteps)
                 .Include("RecipeCategories.Category")
                 .Include("RecipeTags.Tag")
@@ -89,6 +97,7 @@ namespace DataAccess {
         void UpdateRecipe(Recipe recipe);
 
         void DeactivateRecipe(long id);
+        void ReactivateRecipe(long id);
 
         void DeleteRecipe(long id);
 

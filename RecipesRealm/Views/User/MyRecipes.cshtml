@@ -13,6 +13,7 @@
                     <h1>
                         @ViewBag.Title
                     </h1>
+                    <p>Create a personalized culinary haven with the 'My Recipes' section! Unleash your inner chef by organizing and storing your unique recipes in one convenient space. Easily add, edit, and share your culinary creations, making it a go-to hub for your favorite dishes. Elevate your cooking experience with a dedicated space for your own culinary masterpieces</p>
                 </div>
             </div>
         </div>
@@ -20,10 +21,8 @@
             <div class="col-12">
                 @{
                     var k = 0;
-                    foreach (var recipe in Model)
-                    {
-                        if (k % 3 == 0)
-                        {
+                    foreach (var recipe in Model) {
+                        if (k % 3 == 0) {
                             @:<div class="row recipe-row">
                         }
                             <div class="col-4 recipe-col item">
@@ -47,7 +46,7 @@
                                                                 <span>,</span>
                                                             }
                                                         </div>
-                                                            }
+                                                        }
                                                     }
                                                 }
                                             </div>
@@ -63,8 +62,7 @@
                                         @{
                                             var diffClass = "";
                                             var diffTitle = "";
-                                            switch (recipe.Difficulty_Level)
-                                            {
+                                            switch (recipe.Difficulty_Level) {
                                                 case 1:
                                                     diffClass = "super-easy";
                                                     diffTitle = "Super Easy";
@@ -82,6 +80,10 @@
                                         <span class="difficulty @diffClass">
                                             @diffTitle
                                         </span>
+                                        @{ if (recipe.Is_Active != true) {
+                                                <span class="isDisabled">Disabled</span>
+                                            }
+                                        }
                                     </div>
                                 </div>
                             </div>
