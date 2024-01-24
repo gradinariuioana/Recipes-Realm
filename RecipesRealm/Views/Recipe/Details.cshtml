@@ -254,6 +254,9 @@ else {
 
                     if (r.ratingId != -1) {
                         $('.recipe-rating-btn').addClass('fade');
+                        setTimeout(function () {
+                            $('.recipe-rating-btn').addClass('d-none');
+                        }, 1500);
 
                         $('.rating-value').html('(' + r.averageRating + '/5)');
                     }
